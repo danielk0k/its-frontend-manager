@@ -1,14 +1,14 @@
-export default function AdminLayout({
-    children, // will be a page or nested layout
-  }: {
-    children: React.ReactNode
-  }) {
-    return (
-      <section>
-        {/* Include shared UI here e.g. a header or sidebar */}
-        <nav></nav>
-   
-        {children}
-      </section>
-    )
-  }
+import NavigationBar from "@/components/navigation-bar";
+
+export default function UserLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <main>
+      <NavigationBar type="admin"></NavigationBar>
+      {children}
+    </main>
+  );
+}
