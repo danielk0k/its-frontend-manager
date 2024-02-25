@@ -10,14 +10,11 @@ import { signIn } from 'next-auth/react';
 import React from 'react'
 
 const createUserSchema = object({
-  name: string({ required_error: 'Name is required' }).min(
-    1,
-    'Name is required'
-  ),
   email: string({ required_error: 'Email is required' })
     .min(1, 'Email is required')
     .email('Invalid email'),
   photo: string().optional(),
+  school_id: string({ required_error: 'School ID is required' }),
   password: string({ required_error: 'Password is required' })
     .min(1, 'Password is required')
     .min(8, 'Password must be more than 8 characters')
@@ -79,18 +76,6 @@ export const RegisterForm = () => {
     <form onSubmit={handleSubmit(onSubmitHandler)}>
       <div className='mb-6'>
         <input
-          {...register('name')}
-          placeholder='Name'
-          className={`${input_style}`}
-        />
-        {errors['name'] && (
-          <span className='text-red-500 text-xs pt-1 block'>
-            {errors['name']?.message as string}
-          </span>
-        )}
-      </div>
-      <div className='mb-6'>
-        <input
           type='email'
           {...register('email')}
           placeholder='Email address'
@@ -125,6 +110,19 @@ export const RegisterForm = () => {
         {errors['passwordConfirm'] && (
           <span className='text-red-500 text-xs pt-1 block'>
             {errors['passwordConfirm']?.message as string}
+          </span>
+        )}
+      </div>
+      <div className='mb-6'>
+        <input
+          type='school_id'
+          {...register('school_id')}
+          placeholder='Institution'
+          className={`${input_style}`}
+        />
+        {errors['school_id'] && (
+          <span className='text-red-500 text-xs pt-1 block'>
+            {errors['school_id']?.message as string}
           </span>
         )}
       </div>

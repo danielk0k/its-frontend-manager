@@ -4,24 +4,26 @@ import prisma from '../../../../prisma/prisma';
 
 export async function POST(req: Request) {
   try {
-    const { name, email, password } = (await req.json()) as {
-      name: string;
+    const { email, password, school_id } = (await req.json()) as {
+
       email: string;
       password: string;
+      school_id: string;
     };
     const hashed_password = await hash(password, 12);
 
     const user = await prisma.user.create({
       data: {
-        name,
         email: email.toLowerCase(),
         password: hashed_password,
+        school_id: school_id,
+        role: 'STUDENT'
       },
     });
 
     return NextResponse.json({
       user: {
-        name: user.name,
+
         email: user.email,
       },
     });
