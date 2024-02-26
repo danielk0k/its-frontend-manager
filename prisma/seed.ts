@@ -12,9 +12,17 @@ async function main() {
       email: 'admin@admin.com',
       password,
       role: 'ADMIN',
-      school_id: 'NUS'
+      school_id: 'inst001'
     },
   });
+
+  const schools = await prisma.school.createMany({
+    data: [
+        { id: 'inst001', name: 'National University of Singapore' },
+        { id: 'inst002', name: 'Nanyang Technological University' },
+    ],
+    skipDuplicates: true
+  })
   console.log({ user });
 }
 main()
