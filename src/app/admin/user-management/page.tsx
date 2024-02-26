@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { mockInstitutions } from './mockInstitutions';
 import { Users, columns } from "./columns"
 import { DataTable } from "./data-table"
-import NavigationBar from "@/components/navigation-bar";
+
 
 async function getData(): Promise<Users[]> {
   // Fetch data from your API here.
@@ -24,7 +24,7 @@ async function getData(): Promise<Users[]> {
   ]
 }
 
-const user_management_view: React.FC = () => {
+const User_Management_View: React.FC = () => {
   const [institution, setInstitution] = useState(mockInstitutions[0].name); 
   const [data, setData] = useState<Users[]>([]); // Declare and initialize data state
  
@@ -57,4 +57,4 @@ const user_management_view: React.FC = () => {
 
 }
 
-export default user_management_view;
+export default User_Management_View;
