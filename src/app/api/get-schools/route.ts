@@ -1,10 +1,21 @@
 import { NextResponse } from 'next/server';
 import prisma from '../../../../prisma/prisma';
 
+// example usage:
+// const res = await fetch(process.env.URL + '/api/get-schools', {
+//     method: 'GET',
+// });
+// const data = await res.json();
+// const parsed: School[] = data.school_ids.map(school => ({
+//     id: school.id,
+//     name: school.name,
+// }));
+// console.log(parsed);
+
 export async function GET(req: Request) {
   try {
     const school_ids = await prisma.school.findMany()
-
+    
     return NextResponse.json({
       school_ids
     });
