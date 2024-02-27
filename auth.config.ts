@@ -1,15 +1,15 @@
-import bcrypt from "bcryptjs";
-import type { NextAuthConfig } from "next-auth";
-import Credentials from "next-auth/providers/credentials";
+// import bcrypt from "bcryptjs";
+// import type { NextAuthConfig } from "next-auth";
+// import Credentials from "next-auth/providers/credentials";
 
 
 
 
-export default {
-  providers: [
+// export default {
+//   providers: [
 
-    Credentials({
+//     Credentials({
 
-    })
-  ],
-} satisfies NextAuthConfig
+//     })
+//   ],
+// } satisfies NextAuthConfig

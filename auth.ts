@@ -7,9 +7,9 @@ import bcrypt from "bcryptjs";
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
   adapter: PrismaAdapter(prisma),
-  // pages: {
-  //   signIn:
-  // },
+  pages: {
+    signIn: "/auth/login",
+  },
   providers: [
     CredentialsProvider({
       name: "Sign in",
@@ -23,6 +23,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        console.log("in auth function");
         if (!credentials?.email || !credentials.password) {
           return null;
         }
@@ -40,6 +41,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
+        console.log(user);
         return {
           id: user.id,
           email: user.email,
