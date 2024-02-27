@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
   try {
     const adminEmail = req.nextUrl.searchParams.get('email');               
 
-    if (adminEmail !== undefined) {
+    if (adminEmail) {
         const adminUser = await prisma.user.findUnique({
             where: {
                 email: adminEmail,
@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
             },
         });
 
-        if (adminUser !== undefined) {
+        if (adminUser) {
             const students = await prisma.user.findMany({
                 where: {
                     school_id: adminUser?.school_id,
