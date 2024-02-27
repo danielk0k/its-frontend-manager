@@ -1,10 +1,8 @@
-"use client"
-
-import { ColumnDef } from "@tanstack/react-table"
-import { Checkbox } from "@/components/ui/checkbox"
-import { MoreHorizontal } from "lucide-react"
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button"
+import * as React from "react";
+import { ColumnDef } from "@tanstack/react-table";
+import { Checkbox } from "@/components/ui/checkbox";
+import { MoreHorizontal } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,15 +10,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
 export type Users = {
-  
   email: string;
   role: string;
   joinedDate: string;
   action: null;
-}
+};
 
 export const columns: ColumnDef<Users>[] = [
   {
@@ -32,7 +29,7 @@ export const columns: ColumnDef<Users>[] = [
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
       />
-    )
+    ),
   },
   {
     accessorKey: "index",
@@ -56,27 +53,32 @@ export const columns: ColumnDef<Users>[] = [
     header: "Action",
     cell: ({ row }) => {
       const email = row.original.email; // Extracting email from the row data
-      const [users, setUsers] = useState<Users[]>([]);
-      
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => console.log("Promote")}>
-              Promote
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => console.log("Delete")}>
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
+      return <ActionDropdown email={email} />;
     },
   },
-]
+];
+
+// Define a separate component for the dropdown menu
+const ActionDropdown: React.FC<{ email: string }> = ({ email }) => {
+  const [users, setUsers] = React.useState<Users[]>([]);
+  // Add your dropdown menu logic here
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-8 w-8 p-0">
+          <span className="sr-only">Open menu</span>
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuItem onClick={() => console.log("Promote")}>
+          Promote
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => console.log("Delete")}>
+          Delete
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
