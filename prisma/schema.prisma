@@ -10,6 +10,7 @@ datasource db {
   url = env("POSTGRES_PRISMA_URL") // uses connection pooling
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
   shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
+  relationMode = "foreignKeys"
 }
 
 model User {
@@ -17,10 +18,19 @@ model User {
   email         String?   @unique
   password      String?
   role          String?
+  school        School?   @relation(fields: [school_id], references: [id])
   school_id     String?
   accounts      Account[]
 
   @@map("users")
+}
+
+model School {
+  id            String    @id
+  name          String
+  users         User[]
+
+  @@map("schools")
 }
 
 model Account {
@@ -41,5 +51,3 @@ model Account {
   @@unique([provider, providerAccountId])
   @@map("accounts")
 }
-
-
