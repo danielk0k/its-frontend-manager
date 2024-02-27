@@ -20,6 +20,9 @@ async function main() {
     data: [
         { id: 'inst001', name: 'National University of Singapore' },
         { id: 'inst002', name: 'Nanyang Technological University' },
+        { id: 'inst003', name: 'Singapore Management University' },
+        { id: 'inst004', name: 'Singapore Institute of Management' },
+        { id: 'inst005', name: 'Singapore University of Technology and Design' },
     ],
     skipDuplicates: true
   })
