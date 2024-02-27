@@ -1,10 +1,13 @@
 "use client"
 import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod";
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { z, TypeOf, object, string } from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button"
+import { useState } from 'react';
+import { signIn } from 'next-auth/react';
+
 import {
     Select,
     SelectContent,
@@ -27,17 +30,46 @@ const formSchema = z.object({
     institution: z.string()
   })
 
-   
+type CreateUserInput = TypeOf<typeof formSchema>;
+
 export function RegisterForm() {
+    const [submitting, setSubmitting] = useState(false);
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {
       },
     })
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
+    const {
+        reset,
+        handleSubmit,
+        register,
+        formState: { errors },
+      } = form;
+
+      const onSubmitHandler: SubmitHandler<CreateUserInput> = async (values) => {
+        try {
+
+          setSubmitting(true);
+          const res = await fetch('/api/register', {
+            method: 'POST',
+            body: JSON.stringify(values),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          setSubmitting(false);
+          if (!res.ok) {
+            const message = (await res.json()).message;
+            return;
+          }
+
+          signIn(undefined, { callbackUrl: '/' });
+        } catch (error: any) {
+          setSubmitting(false);
         }
+      };
 
 
     return (
@@ -45,14 +77,14 @@ export function RegisterForm() {
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: 15 }}>
                 <p style={{ fontWeight: 'bold', fontSize: 20}}> Account Registration</p>
             </div>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmitHandler)}>
                 <FormField
                 name="email"
                 render={({ field }) => (
                     <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel>Email</FormLabel>
                     <FormControl>
-                        <Input placeholder="👤 Type your email" {...field} />
+                        <Input placeholder="👤 Type your email" {...register('email')} />
                     </FormControl>
                     <FormMessage />
                     </FormItem>
@@ -65,7 +97,7 @@ export function RegisterForm() {
                     <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                        <Input type="password" placeholder="🔒 Type your password"  />
+                        <Input type="password" placeholder="🔒 Type your password" {...register('password')} />
                     </FormControl>
                     <FormMessage />
                     </FormItem>
@@ -81,7 +113,7 @@ export function RegisterForm() {
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                             <SelectTrigger>
-                                <SelectValue placeholder="🏫 Select Institution" />
+                                <SelectValue placeholder="🏫 Select Institution" {...register('institution')}/>
                             </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -96,14 +128,19 @@ export function RegisterForm() {
                     </FormItem>
                 )}
                 />
-                
+
                 <div style={{ textAlign: 'center', paddingBottom: 15, paddingTop: 20 }}>
-                    <Button type="submit" style={{ width: 200, borderRadius: 10 }}>Register</Button>
+                    <Button
+                        type="submit"
+                        style={{ width: 200, borderRadius: 10 }}>
+                            Register
+
+                    </Button>
                 </div>
             </form>
 
             <hr style={{ borderColor: 'gray'}} />
-        </Form>  
+        </Form>
       )
 
 }
