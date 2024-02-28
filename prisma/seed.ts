@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
 import { hash } from 'bcryptjs';
-
-const prisma = new PrismaClient();
+import prisma from "../src/lib/prisma"
 
 async function main() {
   const password = await hash('password123', 12);
@@ -29,7 +27,7 @@ async function main() {
   console.log({ user });
 }
 main()
-  .then(() => prisma.$disconnect())
+  .then(async () => await prisma.$disconnect())
   .catch(async (e) => {
     console.error(e);
     await prisma.$disconnect();
