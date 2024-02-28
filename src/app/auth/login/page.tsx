@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { LoginForm } from "./auth/login/LoginForm";
-import { RegisterForm } from "./auth/RegisterForm";
+import { Button } from "../../../components/ui/button";
+import { LoginForm } from "./LoginForm";
+import { RegisterForm } from "../RegisterForm";
 
 export default function Page() {
   const [showLoginForm, setShowLoginForm] = useState(true);

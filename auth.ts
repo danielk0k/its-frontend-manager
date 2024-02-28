@@ -1,15 +1,17 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import prisma from "./prisma/prisma";
+import prisma from "@/lib/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
   adapter: PrismaAdapter(prisma),
-  // pages: {
-  //   signIn:
-  // },
+  pages: {
+    signIn: "/auth/login",
+  },
+  trustHost: true, // to be reviewed
+  secret: "i284Pp8qa0cDuG6poxJN7ubg0E4Uc4UcV+9bftklHOY=", // to be redacted
   providers: [
     CredentialsProvider({
       name: "Sign in",
@@ -23,6 +25,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        console.log("in auth function");
         if (!credentials?.email || !credentials.password) {
           return null;
         }
@@ -40,6 +43,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
+        console.log(user);
         return {
           id: user.id,
           email: user.email,

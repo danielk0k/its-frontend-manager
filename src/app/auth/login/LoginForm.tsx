@@ -1,11 +1,14 @@
 "use client"
 import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod";
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { z, TypeOf, object, string } from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox";
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { signIn } from 'next-auth/react';
+
 import {
   Form,
   FormControl,
@@ -18,19 +21,58 @@ import {
 const formSchema = z.object({
     email: z.string(),
     password: z.string(),
-  })
+})
 
-   
+type LoginUserInput = TypeOf<typeof formSchema>;
+
 export function LoginForm() {
+    const router = useRouter();
+    const [error, setError] = useState('');
+    const [submitting, setSubmitting] = useState(false);
+
+    const callbackUrl = '/profile';
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {
       },
     })
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
+    const {
+        reset,
+        handleSubmit,
+        register,
+        formState: { errors },
+    } = form;
+
+
+    const onSubmitHandler: SubmitHandler<LoginUserInput> = async (values) => {
+        try {
+          setSubmitting(true);
+
+          const res = await signIn('credentials', {
+            redirect: false,
+            email: values.email,
+            password: values.password,
+            redirectTo: callbackUrl,
+          });
+
+          setSubmitting(false);
+
+          if (!res?.error) {
+
+            router.push(callbackUrl);
+          } else {
+            reset({ password: '' });
+            const message = 'invalid email or password';
+            setError(message);
+          }
+        } catch (error: any) {
+
+          setError(error.message);
+        } finally {
+          setSubmitting(false);
         }
+      };
 
     function handleForgotPasswordClick() {
         console.log("Forgot password clicked");
@@ -41,15 +83,15 @@ export function LoginForm() {
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: 15 }}>
                 <p style={{ fontWeight: "bold", fontSize: 20}}> Login</p>
             </div>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmitHandler)}>
                 <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
                     <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel>Email</FormLabel>
                     <FormControl>
-                        <Input placeholder="👤 Type your email" {...field} />
+                        <Input placeholder="👤 Type your email" {...register('email')} />
                     </FormControl>
                     <FormMessage />
                     </FormItem>
@@ -62,7 +104,7 @@ export function LoginForm() {
                     <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                        <Input type="password" placeholder="🔒 Type your password" {...field} />
+                        <Input type="password" placeholder="🔒 Type your password" {...register('password')} />
                     </FormControl>
                     <FormMessage />
                     </FormItem>
@@ -79,7 +121,7 @@ export function LoginForm() {
             </form>
 
             <hr style={{ borderColor: 'gray'}} />
-        </Form>  
+        </Form>
       )
 
 }
