@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import prisma from '../../../../../prisma/prisma';
+import prisma from '@/lib/prisma';
 
 // example usage:
 // const res = await fetch(process.env.URL + '/api/get-data/get-schools', {
