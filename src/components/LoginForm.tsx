@@ -30,7 +30,7 @@ export function LoginForm() {
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
 
-    const callbackUrl = '/profile';
+    const callbackUrl = '/courses';
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {

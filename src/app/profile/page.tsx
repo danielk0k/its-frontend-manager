@@ -1,6 +1,8 @@
-import { auth } from '../../../auth';
+// Not in use
+
+import { auth } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
-import { signOut } from '../../../auth';
+import { signOut } from '@/lib/auth';
 import Image from 'next/image';
 import React from 'react';
 // import { signOut } from 'next-auth/react'
