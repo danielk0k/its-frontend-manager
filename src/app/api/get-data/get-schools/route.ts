@@ -13,6 +13,7 @@ import prisma from '@/lib/prisma';
 // console.log(parsed);
 
 export async function GET(req: Request) {
+  console.log("im called")
   try {
     const school_ids = await prisma.school.findMany()
     
