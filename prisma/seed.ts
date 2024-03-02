@@ -27,12 +27,23 @@ async function main() {
     },
   });
 
-  const teacher = await prisma.user.upsert({
+  const teacher1 = await prisma.user.upsert({
     where: { email: 'test1@test.com' },
     update: {},
     create: {
         email: 'test1@test.com',
         password: 'test1test1',
+        role: 'TEACHER',
+        school_id: 'inst001'
+    }
+  })
+
+  const teacher2 = await prisma.user.upsert({
+    where: { email: 'test5@test.com' },
+    update: {},
+    create: {
+        email: 'test5@test.com',
+        password: 'test5test5',
         role: 'TEACHER',
         school_id: 'inst001'
     }
@@ -69,17 +80,41 @@ async function main() {
     }
   })
 
-  const course1 = await prisma.course.upsert({
-    where: { id: 'inst001_CS3213' },
-    update: {},
-    create: {
-        id: 'inst001_CS3213',
-        code: 'CS3213',
-        name: 'Foundations of Software Engineering',
-        creator_id: teacher.id,
-        school_id: teacher.school_id,
-    },
-})
+    const course1 = await prisma.course.upsert({
+        where: { id: 'inst001_CS3213' },
+        update: {
+            id: 'inst001_CS3213',
+            code: 'CS3213',
+            name: 'Foundations of Software Engineering',
+            creator_id: teacher1.id,
+            school_id: teacher1.school_id,
+        },
+        create: {
+            id: 'inst001_CS3213',
+            code: 'CS3213',
+            name: 'Foundations of Software Engineering',
+            creator_id: teacher1.id,
+            school_id: teacher1.school_id,
+        },
+    })
+
+    const course2 = await prisma.course.upsert({
+        where: { id: 'inst001_IS1103' },
+        update: {
+            id: 'inst001_IS1103',
+            code: 'IS1103',
+            name: 'Ethics in Computing',
+            creator_id: teacher2.id,
+            school_id: teacher2.school_id,
+        },
+        create: {
+            id: 'inst001_IS1103',
+            code: 'IS1103',
+            name: 'Ethics in Computing',
+            creator_id: teacher2.id,
+            school_id: teacher2.school_id,
+        },
+    })
 }
 main()
   .then(async () => await prisma.$disconnect())
