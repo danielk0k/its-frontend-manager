@@ -16,7 +16,7 @@ model Question {
   description          String?
   entry_function       String?
   io_input             String?
-  func_args            String[]
+  func_args            String?
   reference_program_id String   @unique
 
   @@map("questions")

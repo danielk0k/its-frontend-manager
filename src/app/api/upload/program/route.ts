@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
  * Includes submitted reference programs from teachers and solution programs for students
  * @param request 
  * @returns PutBlobResult
- * Retrieve url using blob.url
+ * Retrieve program text by fetch(blob.url).then((res) => res.text())
  */
 export async function POST(request: Request): Promise<NextResponse> {
   const { searchParams } = new URL(request.url);

@@ -34,7 +34,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   const data = await prisma.question.create({
-    data: { content, reference_program_id: reference_program_id },
+    data: { ...content, reference_program_id: reference_program_id },
   });
 
   return NextResponse.json(data, { status: 200 });
