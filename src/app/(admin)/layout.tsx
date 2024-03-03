@@ -2,7 +2,7 @@ import NavigationBar from "@/components/navigation-bar";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-export default async function UserLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -15,7 +15,7 @@ export default async function UserLayout({
   return (
     <main>
       <NavigationBar
-        type="user"
+        type="admin"
         user={user}
       ></NavigationBar>
       {children}
