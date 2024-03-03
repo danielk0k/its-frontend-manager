@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
     ResizableHandle,
@@ -9,23 +9,66 @@ import {
 import uploadFileImage from "./uploadfile.png";
 
 
-interface AssignmentPageProps {
-  questionCount: number;
-  courseId: string;
-  assignmentId: string;
-  assignmentDescription: string; // Define assignmentDescription prop
-}
 
-export default function AssignmentView({questionCount, courseId, assignmentId, assignmentDescription}: AssignmentPageProps) {
+
+export default function AssignmentView({
+  params,
+}: {
+  params: { assignmentId: string };
+}) {
   const [editorContent, setEditorContent] = useState("");
+  const [questionCount, setQuestionCount] = useState(1); //set questionCount as 1
+  const [assignmentDescription, setAssignmentDescription] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  //handles the text editor
   const handleEditorChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setEditorContent(event.target.value);
   };
-    
+
+  useEffect(() => {
+    // Fetch question count asynchronously
+    fetchQuestionCount();
+  }, []);
+
+  const fetchQuestionCount = async () => {
+    try {
+        const response = await fetch("API_ENDPOINT_TO_GET_QUESTION_COUNT");
+        if (response.ok) {
+            const data = await response.json();
+            // Assuming data has a property called questionCount
+            setQuestionCount(data.questionCount);
+        } else {
+            console.error("Failed to fetch question count");
+        }
+    } catch (error) {
+        console.error("Error fetching question count:", error);
+    }
+};
+
+  //const questionCount = 12; 
   const questionNumbers = Array.from(Array(questionCount).keys()).map(
     (index) => index + 1
   );
+
+  useEffect(() => {
+    // Fetch assignment description from an API endpoint
+    const fetchAssignmentDescription = async () => {
+      try {
+        const response = await fetch('YOUR_API_ENDPOINT');
+        if (response.ok) {
+          const data = await response.json();
+          setAssignmentDescription(data.assignmentDescription);
+        } else {
+          console.error('Failed to fetch assignment description');
+        }
+      } catch (error) {
+        console.error('Error fetching assignment description:', error);
+      }
+    };
+  
+    fetchAssignmentDescription();
+  }, []);
 
   //handle file upload
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,7 +121,7 @@ export default function AssignmentView({questionCount, courseId, assignmentId, a
 
         {/*for panels*/}
         <div className="col-span-7 border rounded-md p-0" style={{height: '100%'}}>
-          
+
           <ResizablePanelGroup
                 direction="horizontal"
                 className="max-w-screen-x2 mx-auto rounded-lg border w-full"
@@ -135,11 +178,12 @@ export default function AssignmentView({questionCount, courseId, assignmentId, a
                     </ResizablePanelGroup>
                 </ResizablePanel>
             </ResizablePanelGroup>
-            
+
         </div>
 
     </div>
-      
+
 
   );
 }
+
