@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { Role } from "@prisma/client";
 
 // example usage:
 // const reqdata = {
@@ -19,75 +20,86 @@ import prisma from '@/lib/prisma';
 
 export async function POST(req: Request) {
   try {
-    const { email, code, name } = (await req.json()) as {
-        email: string,
-        code: string,
-        name: string,
-    };
+    const { user_id, user_role, school_id, code, name } =
+      (await req.json()) as {
+        user_id: string;
+        user_role: Role;
+        school_id: string;
+        code: string;
+        name: string;
+      };
 
-    const courseCreator = await prisma.user.findUnique({
-        where: {
-            email: email,
-        }
-    });
+    // const courseCreator = await prisma.user.findUnique({
+    //     where: {
+    //         email: email,
+    //     }
+    // });
 
-    if (courseCreator == undefined) {
-        return new NextResponse(
-            JSON.stringify({
-              status: 'error',
-              message: 'Not a valid user.',
-            }),
-            { status: 500 }
-          );
-    } else if (courseCreator.role !== 'TEACHER') {
-        return new NextResponse(
-            JSON.stringify({
-              status: 'error',
-              message: 'You do not have the permission to make this request.',
-            }),
-            { status: 500 }
-          );
+    // if (courseCreator == undefined) {
+    //     return new NextResponse(
+    //         JSON.stringify({
+    //           status: 'error',
+    //           message: 'Not a valid user.',
+    //         }),
+    //         { status: 500 }
+    //       );
+    // } else if (courseCreator.role !== 'TEACHER') {
+    //     return new NextResponse(
+    //         JSON.stringify({
+    //           status: 'error',
+    //           message: 'You do not have the permission to make this request.',
+    //         }),
+    //         { status: 500 }
+    //       );
+    // }
+
+    if (user_role !== Role.TEACHER) {
+      return new NextResponse(
+        JSON.stringify({
+          status: "error",
+          message: "You do not have the permission to make this request.",
+        }),
+        { status: 500 }
+      );
     }
+    // const courseId = courseCreator.school_id + "_" + code;
 
-    const courseId = courseCreator.school_id + "_" + code;
+    // const duplicateCourse = await prisma.course.findUnique({
+    //     where: {
+    //         id: courseId,
+    //     }
+    // })
 
-    const duplicateCourse = await prisma.course.findUnique({
-        where: {
-            id: courseId,
-        }
-    })
-
-    if (duplicateCourse !== null) {
-        return new NextResponse(
-            JSON.stringify({
-              status: 'error',
-              message: 'Course already exists.',
-            }),
-            { status: 500 }
-          );
-    }
+    // if (duplicateCourse !== null) {
+    //     return new NextResponse(
+    //         JSON.stringify({
+    //           status: 'error',
+    //           message: 'Course already exists.',
+    //         }),
+    //         { status: 500 }
+    //       );
+    // }
 
     const courseToCreate = await prisma.course.create({
-        data: {
-            id: courseId,
-            code: code,
-            name: name,
-            creator_id: courseCreator.id,
-            school_id: courseCreator.school_id,
-        },
-    })
+      data: {
+        id: school_id + "_" + code,
+        code: code,
+        name: name,
+        creator_id: user_id,
+        school_id: school_id,
+      },
+    });
 
     return NextResponse.json({
-        courseToCreate
+      courseToCreate,
     });
   } catch (error: any) {
     return new NextResponse(
       JSON.stringify({
-        status: 'error',
+        status: "error",
         message: error.message,
       }),
       { status: 500 }
     );
   }
 }
-
