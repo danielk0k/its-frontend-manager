@@ -21,13 +21,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { User } from "next-auth";
 
 const PAGE_ROUTES = {
-  user: [{ label: "My Courses", url: "/my-courses/" }],
-  admin: [{ label: "User Management", url: "/admin/user-management" }],
+  user: [{ label: "My Courses", url: "/courses/" }],
+  admin: [{ label: "User Management", url: "/user-management" }],
 };
 
-export default function NavigationBar({ type }: { type: "user" | "admin" }) {
+export default function NavigationBar({
+  type,
+  user,
+}: {
+  type: "user" | "admin";
+  user: User;
+}) {
   return (
     <NavigationMenu>
       <span className="font-bold text-lg">ITS Management System</span>
@@ -49,13 +56,16 @@ export default function NavigationBar({ type }: { type: "user" | "admin" }) {
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account {type === "admin" && "[Admin]"}</DropdownMenuLabel>
+            <DropdownMenuLabel>
+              <p>My Account {type === "admin" && "[Admin]"}</p>
+              <p className="font-light">{user.email}</p>
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <Link href="/">Change Password</Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <Link href="/">Logout</Link>
+              <Link href="/api/auth/signout">Sign Out</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
