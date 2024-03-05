@@ -29,23 +29,39 @@ enum Role {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  email     String?   @unique
-  password  String?
-  role      Role?
-  school    School?   @relation(fields: [school_id], references: [id])
-  school_id String?
-  accounts  Account[]
+  id            String    @id @default(uuid())
+  email         String?   @unique
+  password      String?
+  role          Role?
+  school        School   @relation(fields: [school_id], references: [id])
+  school_id     String
+  accounts      Account[]
+  created_courses Course[] @relation("course_creator")
+  joined_courses Course[]  @relation("course_members")
 
   @@map("users")
 }
 
 model School {
-  id    String @id
-  name  String
-  users User[]
+  id            String    @id
+  name          String
+  users         User[]
+  courses       Course[]
 
   @@map("schools")
+}
+
+model Course {
+  id            String    @id
+  code          String
+  name          String
+  creator       User     @relation("course_creator", fields: [creator_id], references: [id])
+  creator_id    String
+  school        School   @relation(fields: [school_id], references: [id])
+  school_id     String
+  members       User[]    @relation("course_members")
+
+  @@map("courses")
 }
 
 model Account {

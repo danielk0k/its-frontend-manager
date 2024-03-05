@@ -23,7 +23,10 @@ export async function GET(req: NextRequest) {
         const adminUser = await prisma.user.findUnique({
             where: {
                 email: adminEmail,
-                role: 'ADMIN',
+                OR: [
+                    { role: 'ADMIN' },
+                    { role: 'TEACHER' },
+                ],
             },
         });
 
