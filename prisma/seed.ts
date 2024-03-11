@@ -5,9 +5,10 @@ import { Role } from "@prisma/client";
 // TODO: Place in env file
 const ADMIN_EMAIL = "admin@admin.com";
 const ADMIN_PASSWORD = "password123";
+const DEFAULT_PASSWORD = "password1";
 
 async function main() {
-  const schools = await prisma.school.createMany({
+  const all_schools = prisma.school.createMany({
     data: [
       { id: "inst001", name: "National University of Singapore" },
       { id: "inst002", name: "Nanyang Technological University" },
@@ -17,21 +18,12 @@ async function main() {
     ],
     skipDuplicates: true,
   });
-
-  const password = await hash(ADMIN_PASSWORD, 12);
-  const user = await prisma.user.upsert({
+  const admin_user = prisma.user.upsert({
     where: { email: ADMIN_EMAIL },
-    update: {
-      role: Role.ADMIN,
-      school: {
-        connect: {
-          id: "inst001",
-        },
-      },
-    },
+    update: {},
     create: {
       email: ADMIN_EMAIL,
-      password,
+      password: await hash(ADMIN_PASSWORD, 12),
       role: Role.ADMIN,
       school: {
         connect: {
@@ -41,8 +33,86 @@ async function main() {
     },
   });
 
-  console.log({ user });
+  const teacher_users = prisma.user.createMany({
+    data: [
+      {
+        email: "teacher1@test.com",
+        password: await hash(DEFAULT_PASSWORD, 12),
+        role: Role.TEACHER,
+        school_id: "inst001",
+      },
+      {
+        email: "teacher2@test.com",
+        password: await hash(DEFAULT_PASSWORD, 12),
+        role: Role.TEACHER,
+        school_id: "inst001",
+      },
+    ],
+    skipDuplicates: true,
+  });
+
+  const student_users = prisma.user.createMany({
+    data: [
+      {
+        email: "student1@test.com",
+        password: await hash(DEFAULT_PASSWORD, 12),
+        role: Role.STUDENT,
+        school_id: "inst001",
+      },
+      {
+        email: "student2@test.com",
+        password: await hash(DEFAULT_PASSWORD, 12),
+        role: Role.STUDENT,
+        school_id: "inst001",
+      },
+      {
+        email: "student3@test.com",
+        password: await hash(DEFAULT_PASSWORD, 12),
+        role: Role.STUDENT,
+        school_id: "inst001",
+      },
+    ],
+    skipDuplicates: true,
+  });
+
+  // const course1 = await prisma.course.upsert({
+  //   where: { id: "inst001_CS3213" },
+  //   update: {
+  //     id: "inst001_CS3213",
+  //     code: "CS3213",
+  //     name: "Foundations of Software Engineering",
+  //     creator_id: teacher1.id,
+  //     school_id: teacher1.school_id,
+  //   },
+  //   create: {
+  //     id: "inst001_CS3213",
+  //     code: "CS3213",
+  //     name: "Foundations of Software Engineering",
+  //     creator_id: teacher1.id,
+  //     school_id: teacher1.school_id,
+  //   },
+  // });
+
+  // const course2 = await prisma.course.upsert({
+  //   where: { id: "inst001_IS1103" },
+  //   update: {
+  //     id: "inst001_IS1103",
+  //     code: "IS1103",
+  //     name: "Ethics in Computing",
+  //     creator_id: teacher2.id,
+  //     school_id: teacher2.school_id,
+  //   },
+  //   create: {
+  //     id: "inst001_IS1103",
+  //     code: "IS1103",
+  //     name: "Ethics in Computing",
+  //     creator_id: teacher2.id,
+  //     school_id: teacher2.school_id,
+  //   },
+  // });
+  prisma.$transaction([all_schools, admin_user, teacher_users, student_users]);
 }
+
 main()
   .then(async () => await prisma.$disconnect())
   .catch(async (e) => {
