@@ -18,6 +18,8 @@ model Question {
   io_input             String?
   func_args            String?
   reference_program_id String   @unique
+  course               Course   @relation(fields: [courseId], references: [id])
+  courseId             String
 
   @@map("questions")
 }
@@ -60,6 +62,7 @@ model Course {
   school        School   @relation(fields: [school_id], references: [id])
   school_id     String
   members       User[]    @relation("course_members")
+  questions     Question[]
 
   @@map("courses")
 }
