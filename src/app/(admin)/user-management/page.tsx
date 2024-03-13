@@ -5,30 +5,25 @@ import { mockInstitutions } from './mockInstitutions';
 import { Users, columns } from "./columns"
 import { DataTable } from "./data-table"
 
-
 async function getData(): Promise<Users[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      email: "user1@example.com",
-      role: "student",
-      joinedDate: "2022-01-01",
-      action: null,
-    },
-    {
-      email: "user2@example.com",
-      role: "student",
-      joinedDate: "2022-02-15",
-      action: null,
-    },
-  ]
+  try {
+    const response = await fetch(`/api/get-data/get-students?email=admin@admin.com`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch user data');
+    }
+    const data = await response.json();
+    return data.students;
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    return [];
+  }
 }
+
 
 const User_Management_View: React.FC = () => {
   const [institution, setInstitution] = useState(mockInstitutions[0].name); 
   const [data, setData] = useState<Users[]>([]); // Declare and initialize data state
- 
-  
+
   useEffect(() => {
     const fetchDataAsync = async () => {
       const result = await getData();
@@ -48,7 +43,7 @@ const User_Management_View: React.FC = () => {
           </div>
         </div> 
         <div className="container mx-auto py-10">
-          <DataTable columns={columns} data={data} />
+          <DataTable columns={columns} data={data}/>
         </div> 
       </main>
         

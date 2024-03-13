@@ -28,17 +28,26 @@ import { Input } from "@/components/ui/input"
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  filterValue?: string;
+}
+
+function filterData<TData>(data: TData[], filterValue: string): TData[] {
+  return data.filter((item: any) =>
+    item.email.toLowerCase().includes(filterValue.toLowerCase())
+  );
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  filterValue,
 }: DataTableProps<TData, TValue>) {
   
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
+  const filteredData = filterValue ? filterData(data, filterValue) : data;
   const [rowSelection, setRowSelection] = React.useState({})
 
   const table = useReactTable({
@@ -61,14 +70,14 @@ export function DataTable<TData, TValue>({
   return (
     <div>
       <div className="absolute right-5 top-15">
-        <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+          <Input
+            placeholder="Filter emails..."
+            value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn("email")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
+          />
       </div>
       <div className="rounded-md border">
       <Table>
