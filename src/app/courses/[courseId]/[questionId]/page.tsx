@@ -14,7 +14,7 @@ import uploadFileImage from "./uploadfile.png";
 export default function AssignmentView({
   params,
 }: {
-  params: { assignmentId: string };
+  params: { questionId: string };
 }) {
   const [editorContent, setEditorContent] = useState("");
   const [questionCount, setQuestionCount] = useState(1); //set questionCount as 1

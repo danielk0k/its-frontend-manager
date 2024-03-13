@@ -11,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useRouter } from 'next/navigation'
 
 export type Users = {
   email: string;
@@ -62,7 +63,7 @@ export const columns: ColumnDef<Users>[] = [
 const ActionDropdown: React.FC<{ email: string }> = ({ email }) => {
   const [users, setUsers] = React.useState<Users[]>([]);
   const [error, setError] = React.useState<string | null>(null); 
-
+  const router = useRouter()
   const promoteToTeacher = async () => {
     try {
       const response = await fetch("/api/user-management/promote-to-teacher", {
@@ -75,7 +76,7 @@ const ActionDropdown: React.FC<{ email: string }> = ({ email }) => {
       if (response.ok) {
         console.log("User promoted to teacher successfully");
         // Update the user's role in the local state
-        window.location.reload();
+        router.refresh()
       } else {
         console.error("Failed to promote user to teacher");
         setError("Failed to promote user to teacher");
@@ -97,7 +98,7 @@ const ActionDropdown: React.FC<{ email: string }> = ({ email }) => {
       });
       if (response.ok) {
         console.log("User deleted successfully");
-        window.location.reload();
+        router.refresh()
       } else {
         console.error("Failed to delete user");
         setError("Failed to delete user");
