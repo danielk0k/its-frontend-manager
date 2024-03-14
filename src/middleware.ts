@@ -7,7 +7,7 @@ export async function middleware(request) {
   const secret = process.env.AUTH_SECRET;
   const token = await getToken({
     req: request,
-    secret: secret
+    secret: secret,
   });
   if (!token) console.log("null token")
   // if (!token) return NextResponse.redirect(new URL("/signin", request.url));
