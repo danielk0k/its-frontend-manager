@@ -11,7 +11,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/signin",
   },
   trustHost: true, // to be reviewed
-  secret: "i284Pp8qa0cDuG6poxJN7ubg0E4Uc4UcV+9bftklHOY=", // to be redacted
+  secret: process.env.AUTH_SECRET, // to be redacted
   providers: [
     CredentialsProvider({
       name: "Sign in",

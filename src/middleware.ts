@@ -16,8 +16,7 @@ export async function middleware(request) {
       break;
     case "TEACHER":
       if (
-        !request.nextUrl.pathname.startsWith("/courses") &&
-      ) {
+        !request.nextUrl.pathname.startsWith("/courses")) {
         return NextResponse.redirect(new URL("/courses", request.url));
       }
       break;
