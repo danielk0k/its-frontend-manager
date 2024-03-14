@@ -5,30 +5,32 @@ import { getToken } from "next-auth/jwt";
 export async function middleware(request) {
   const token = await getToken({ req: request, secret: process.env.AUTH_SECRET });
   if (!token) console.log("null token")
-  if (!token) return NextResponse.redirect(new URL("/signin", request.url));
+  // if (!token) return NextResponse.redirect(new URL("/signin", request.url));
 
   // Check the role and redirect based on the role
-  switch (token.role) {
-    case "ADMIN":
-      if (!request.nextUrl.pathname.startsWith("/user-management")) {
-        return NextResponse.redirect(new URL("/user-management", request.url));
-      }
-      break;
-    case "TEACHER":
-      if (
-        !request.nextUrl.pathname.startsWith("/courses")) {
-        return NextResponse.redirect(new URL("/courses", request.url));
-      }
-      break;
-    case "STUDENT":
-      // Add the paths that the student can access here
-      if (!request.nextUrl.pathname.startsWith("/courses")) {
-        return NextResponse.redirect(new URL("/courses", request.url));
-      }
-      break;
+  if (token) {
+    switch (token.role) {
+      case "ADMIN":
+        if (!request.nextUrl.pathname.startsWith("/user-management")) {
+          return NextResponse.redirect(new URL("/user-management", request.url));
+        }
+        break;
+      case "TEACHER":
+        if (
+          !request.nextUrl.pathname.startsWith("/courses")) {
+          return NextResponse.redirect(new URL("/courses", request.url));
+        }
+        break;
+      case "STUDENT":
+        // Add the paths that the student can access here
+        if (!request.nextUrl.pathname.startsWith("/courses")) {
+          return NextResponse.redirect(new URL("/courses", request.url));
+        }
+        break;
 
-    default:
-      return NextResponse.redirect(new URL("/signin", request.url));
+      default:
+        return NextResponse.redirect(new URL("/signin", request.url));
+    }
   }
 }
 

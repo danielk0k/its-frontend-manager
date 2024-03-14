@@ -60,7 +60,7 @@ export function RegisterForm() {
 
     }, []);
 
-    if (!data) return <p>Loading...</p>
+    if (!data) return <p>Loading Register Page...</p>
     const schools: School[] = data.school_ids.map((school: School) => ({
         id: school.id,
         name: school.name,
