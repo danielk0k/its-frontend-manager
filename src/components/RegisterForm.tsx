@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
-
 import {
     Select,
     SelectContent,
@@ -33,6 +32,11 @@ const formSchema = z.object({
   })
 
 type CreateUserInput = TypeOf<typeof formSchema>;
+
+interface School {
+    id: string;
+    name: string;
+}
 
 export function RegisterForm() {
     const [data, setData] = useState(null)
@@ -61,18 +65,18 @@ export function RegisterForm() {
     }, []);
 
     if (!data) return <p>Loading Register Page...</p>
-    const schools: School[] = data.school_ids.map((school: School) => ({
-        id: school.id,
-        name: school.name,
+    const schools: School[] = (data as { school_ids: School[] }).school_ids.map((school: School) => ({
+      id: school.id,
+      name: school.name,
     }));
 
     // if (data) return <p>{schools[0].name}</p> // this is just to check if the data is being fetched
 
     const {
-        reset,
-        handleSubmit,
-        register,
-        formState: { errors },
+      reset,
+      handleSubmit,
+      register,
+      formState: { errors },
       } = form;
 
       const onSubmitHandler: SubmitHandler<CreateUserInput> = async (values) => {
