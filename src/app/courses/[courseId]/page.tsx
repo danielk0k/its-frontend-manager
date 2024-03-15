@@ -3,6 +3,7 @@ import QuestionCard from "@/components/question-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getUserProps } from "@/actions/getUserProps";
 import { redirect } from "next/navigation";
+import { getCourseInfo } from "@/actions/getCourseInfo";
 
 interface Question {
     title: string,
@@ -21,23 +22,13 @@ export default async function CourseView({
       redirect("/");
     }
 
-    const resCourseBody = await fetch(
-      "/api/get-data/get-course?courseId=" +
-        user.school_id +
-        "_" +
-        params.courseId,
-      {
-        method: "GET",
-      }
-    ).then((res) => res.json());
-
-    if (resCourseBody.status == "error") {
-      redirect("/courses");
+    const course = await getCourseInfo({courseId: `${user.school_id}_${params.courseId}`});
+    if (!course) {
+      redirect("/courses")
     }
 
     // get course questions, display on cards
-    const resCourseData = resCourseBody.course;
-    const courseQuestions: Question[] = resCourseData.questions;
+    const courseQuestions: Question[] = course.questions;
 
     return (
         <Tabs defaultValue="questions" asChild>

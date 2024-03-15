@@ -87,10 +87,6 @@ async function main() {
     }
   })
 
-  if (teacher1 == null || teacher2 == null) {
-    return;
-  }
-
   const all_courses = prisma.course.createMany({
     data: [
       {
