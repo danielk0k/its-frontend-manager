@@ -8,6 +8,7 @@ export async function middleware(request) {
   const token = await getToken({
     req: request,
     secret: secret,
+    salt: "authjs.session-token"
   });
   if (!token) console.log("null token")
   // if (!token) return NextResponse.redirect(new URL("/signin", request.url));
