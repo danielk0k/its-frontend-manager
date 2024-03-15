@@ -3,70 +3,6 @@ import QuestionCard from "@/components/question-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getUserProps } from "@/actions/getUserProps";
 import { redirect } from "next/navigation";
-import { requestToBodyStream } from "next/dist/server/body-streams";
-
-const sample_assignemnts = [
-  {
-    assignment_title: "Math Homework",
-    due_date: "01/03/2024",
-    number_of_questions: 10,
-    number_of_submitted_questions: 8,
-  },
-  {
-    assignment_title: "History Essay",
-    due_date: "28/02/2024",
-    number_of_questions: 5,
-    number_of_submitted_questions: 5,
-  },
-  {
-    assignment_title: "Science Lab Report",
-    due_date: "05/03/2024",
-    number_of_questions: 15,
-    number_of_submitted_questions: 12,
-  },
-  {
-    assignment_title: "English Reading",
-    due_date: "03/03/2024",
-    number_of_questions: 7,
-    number_of_submitted_questions: 6,
-  },
-  {
-    assignment_title: "Programming Project",
-    due_date: "10/03/2024",
-    number_of_questions: 20,
-    number_of_submitted_questions: 18,
-  },
-  {
-    assignment_title: "Art Presentation",
-    due_date: "07/03/2024",
-    number_of_questions: 3,
-    number_of_submitted_questions: 3,
-  },
-  {
-    assignment_title: "Physical Education Log",
-    due_date: "02/03/2024",
-    number_of_questions: 12,
-    number_of_submitted_questions: 10,
-  },
-  {
-    assignment_title: "Music Composition",
-    due_date: "08/03/2024",
-    number_of_questions: 8,
-    number_of_submitted_questions: 7,
-  },
-  {
-    assignment_title: "Chemistry Experiment",
-    due_date: "06/03/2024",
-    number_of_questions: 18,
-    number_of_submitted_questions: 15,
-  },
-  {
-    assignment_title: "Geography Quiz",
-    due_date: "04/03/2024",
-    number_of_questions: 6,
-    number_of_submitted_questions: 4,
-  },
-];
 
 interface Question {
     title: string,
@@ -85,13 +21,18 @@ export default async function CourseView({
       redirect("/");
     }
 
-    const resCourse = await fetch(process.env.URL + "/api/get-data/get-course?courseId=" + user.school_id + "_" + params.courseId, {
-        method: 'GET',
-    });
-    const resCourseBody = await resCourse.json();
+    const resCourseBody = await fetch(
+      "/api/get-data/get-course?courseId=" +
+        user.school_id +
+        "_" +
+        params.courseId,
+      {
+        method: "GET",
+      }
+    ).then((res) => res.json());
 
-    if (resCourseBody.status == 'error') {
-        redirect("../")
+    if (resCourseBody.status == "error") {
+      redirect("/courses");
     }
 
     // get course questions, display on cards
