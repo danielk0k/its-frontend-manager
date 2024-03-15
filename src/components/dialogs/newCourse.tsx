@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from 'next/navigation'
 import {
   Dialog,
   DialogContent,
@@ -30,6 +31,7 @@ const formSchema = z.object({
 });
 
 export default function NewCourseDialog({ user }: { user: User }) {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -53,7 +55,12 @@ export default function NewCourseDialog({ user }: { user: User }) {
           "Content-Type": "application/json",
         },
       });
-      console.log(res)
+
+      const resBody = await res.json();
+      if (resBody.status == 'success') {
+        router.push('/courses/' + values.code);
+      }
+
     } catch (error) {
       console.error(error);
     }

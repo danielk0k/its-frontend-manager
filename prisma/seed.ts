@@ -75,42 +75,43 @@ async function main() {
     skipDuplicates: true,
   });
 
-  // const course1 = await prisma.course.upsert({
-  //   where: { id: "inst001_CS3213" },
-  //   update: {
-  //     id: "inst001_CS3213",
-  //     code: "CS3213",
-  //     name: "Foundations of Software Engineering",
-  //     creator_id: teacher1.id,
-  //     school_id: teacher1.school_id,
-  //   },
-  //   create: {
-  //     id: "inst001_CS3213",
-  //     code: "CS3213",
-  //     name: "Foundations of Software Engineering",
-  //     creator_id: teacher1.id,
-  //     school_id: teacher1.school_id,
-  //   },
-  // });
+  const teacher1 = await prisma.user.findUnique({
+    where: {
+        email: "teacher1@test.com",
+    }
+  })
 
-  // const course2 = await prisma.course.upsert({
-  //   where: { id: "inst001_IS1103" },
-  //   update: {
-  //     id: "inst001_IS1103",
-  //     code: "IS1103",
-  //     name: "Ethics in Computing",
-  //     creator_id: teacher2.id,
-  //     school_id: teacher2.school_id,
-  //   },
-  //   create: {
-  //     id: "inst001_IS1103",
-  //     code: "IS1103",
-  //     name: "Ethics in Computing",
-  //     creator_id: teacher2.id,
-  //     school_id: teacher2.school_id,
-  //   },
-  // });
-  prisma.$transaction([all_schools, admin_user, teacher_users, student_users]);
+  const teacher2 = await prisma.user.findUnique({
+    where: {
+        email: "teacher2@test.com",
+    }
+  })
+
+  if (teacher1 == null || teacher2 == null) {
+    return;
+  }
+
+  const all_courses = prisma.course.createMany({
+    data: [
+      {
+        id: "inst001_CS3213",
+        code: "CS3213",
+        name: "Foundations of Software Engineering",
+        creator_id: teacher1.id,
+        school_id: teacher1.school_id,
+      },
+      {
+        id: "inst001_IS1103",
+        code: "IS1103",
+        name: "Ethics in Computing",
+        creator_id: teacher2.id,
+        school_id: teacher2.school_id,
+      }
+    ],
+    skipDuplicates: true,
+  })
+
+  prisma.$transaction([all_schools, admin_user, teacher_users, student_users, all_courses]);
 }
 
 main()
