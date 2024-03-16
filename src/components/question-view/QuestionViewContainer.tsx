@@ -30,9 +30,12 @@ export default function QuestionViewContainer({
         <div className="flex flex-col p-6">
           <h2 className="text-lg font-semibold mb-4">{question.title}</h2>
           <p>{question.description}</p>
-          <Link href={`/courses/${question.courseId}`}>
-            <Button variant="secondary">Return to course</Button>
-          </Link>
+          <div style={{ marginTop: 14}}>
+            <Link href={`/courses/${question.courseId.substring(8)}`}>
+              <Button variant="secondary">Return to course</Button>
+            </Link>
+
+          </div>
         </div>
       </ResizablePanel>
       <ResizableHandle withHandle />

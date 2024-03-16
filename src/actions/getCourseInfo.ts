@@ -30,7 +30,7 @@ export async function getCourseInfo({ courseId }: { courseId: string }) {
     if (!course) {
       return null;
     }
-    console.log(course)
+    // console.log(course)
     return course;
   } catch (error) {
     console.error(error);

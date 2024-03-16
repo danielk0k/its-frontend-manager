@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { redirect } from "next/navigation";
 
 export async function POST(req: Request) {
   try {
@@ -27,69 +28,37 @@ export async function POST(req: Request) {
             questions: true, 
         },
       });
-  
-      if (!course) {
-        return new NextResponse(
-          JSON.stringify({
-            status: 'error',
-            message: 'Course not found.',
-          }),
-          { status: 404 }
-        );
-      }
 
-  
-      if (!user || user.role !== 'TEACHER' || user.id !== course.creator_id) {
-
-        return new NextResponse(
-          JSON.stringify({
-            status: 'error',
-            message: 'Unauthorized. Only the teacher who created the course can create a question.',
-          }),
-          { status: 403 }
-        );
-      }
-
-      const question = await prisma.question.create({
+      const newQuestion = await prisma.question.create({
         data: {
           title,
           description,
           language,
           reference_program,
           course: {
-            connect: {
-              id: course.id,
-            },
-          },
-        },
-      });
-
-      await prisma.course.update({
-        where: {
-          id: course.id,
-        },
-        data: {
-          questions: {
-            push: question,
+            connect: { id: course?.id },
           },
         },
       });
   
-      return new NextResponse(
-        JSON.stringify({
-          status: 'success',
-          message: 'Question created successfully.',
-          question,
-        }),
-        { status: 201 }
-      );
+      const existingQuestions = course?.questions || [];
+      const updatedQuestions = [...existingQuestions, newQuestion];
+  
+      await prisma.course.update({
+        where: {
+          id: course?.id,
+        },
+        data: {
+          questions: updatedQuestions,
+        },
+      });
+      return NextResponse.redirect(`/courses/${course_name}`)
     } catch (error: any) {
       return new NextResponse(
         JSON.stringify({
           status: 'error',
           message: error.message,
         }),
-        { status: 500 }
       );
     }
 }

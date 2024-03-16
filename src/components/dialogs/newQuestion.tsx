@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { redirect } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -32,6 +33,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { User } from "@prisma/client";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 const formSchema = z.object({
     title: z.string(),
@@ -42,6 +44,7 @@ const formSchema = z.object({
 
 
 export default function NewQuestionDialog({ user, course_name }: { user: User, course_name: String }) {
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -58,13 +61,6 @@ export default function NewQuestionDialog({ user, course_name }: { user: User, c
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check file type
-    const fileType = file.name.split('.').pop();
-    if (!['txt', 'c', 'py'].includes(fileType!)) {
-        alert('Invalid file type. Please select a txt, c, or py file.');
-        return null;
-    }
-
     // Read file as text
     const reader = new FileReader();
     reader.onload = function (event) {
@@ -74,7 +70,6 @@ export default function NewQuestionDialog({ user, course_name }: { user: User, c
     };
     reader.readAsText(file);
 }
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const res = await fetch("/api/question-management/create-question", {
@@ -92,11 +87,13 @@ export default function NewQuestionDialog({ user, course_name }: { user: User, c
         },
       });
       console.log(res)
+      redirect(`/courses/course_name`)
     } catch (error) {
       console.error(error);
     }
   }
   return (
+    <>
     <Dialog>
       <DialogTrigger>
         <Button variant="secondary">New question</Button>
@@ -165,10 +162,13 @@ export default function NewQuestionDialog({ user, course_name }: { user: User, c
                 Upload a file containing the reference solution.
               </FormDescription>
             </FormItem>
-            <Button type="submit">Submit</Button>
+            <DialogClose asChild>
+               <Button type="submit">Submit</Button>
+            </DialogClose>
           </form>
         </Form>
       </DialogContent>
     </Dialog>
+    </>
   );
 }
