@@ -61,7 +61,53 @@ export const columns: ColumnDef<Users>[] = [
 // Define a separate component for the dropdown menu
 const ActionDropdown: React.FC<{ email: string }> = ({ email }) => {
   const [users, setUsers] = React.useState<Users[]>([]);
-  // Add your dropdown menu logic here
+  const [error, setError] = React.useState<string | null>(null); 
+
+  const promoteToTeacher = async () => {
+    try {
+      const response = await fetch("/api/user-management/promote-to-teacher", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+      if (response.ok) {
+        console.log("User promoted to teacher successfully");
+        // Update the user's role in the local state
+        window.location.reload();
+      } else {
+        console.error("Failed to promote user to teacher");
+        setError("Failed to promote user to teacher");
+      }
+    } catch (error) {
+      console.error("Error promoting user to teacher:", error);
+      setError("Error promoting user to teacher. Please try again later.");
+    }
+  };
+
+  const deleteUser = async () => {
+    try {
+      const response = await fetch("/api/user-management/delete-row", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+      if (response.ok) {
+        console.log("User deleted successfully");
+        window.location.reload();
+      } else {
+        console.error("Failed to delete user");
+        setError("Failed to delete user");
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      setError("Error deleting user. Please try again later.");
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -72,10 +118,10 @@ const ActionDropdown: React.FC<{ email: string }> = ({ email }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => console.log("Promote")}>
+        <DropdownMenuItem onClick={promoteToTeacher}>
           Promote
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => console.log("Delete")}>
+        <DropdownMenuItem onClick={deleteUser}>
           Delete
         </DropdownMenuItem>
       </DropdownMenuContent>

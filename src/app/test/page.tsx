@@ -28,7 +28,8 @@ const formSchema = z.object({
 });
 
 export default function NewQuestionForm() {
-  const inputFileRef = useRef<HTMLInputElement>(null);
+  const inputRefFileRef = useRef<HTMLInputElement>(null);
+  const inputSolFileRef = useRef<HTMLInputElement>(null);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,32 +43,45 @@ export default function NewQuestionForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      if (!inputFileRef.current?.files) {
+      if (!inputRefFileRef.current?.files || !inputSolFileRef.current?.files) {
         throw new Error("No file selected");
       }
 
-      const file = inputFileRef.current.files[0];
+      const refFile = inputRefFileRef.current.files[0];
+      const solfile = inputSolFileRef.current.files[0];
+      // const response = await fetch(
+      //   `/api/upload/program?filename=${refFile.name}`,
+      //   {
+      //     method: "POST",
+      //     body: refFile,
+      //   }
+      // );
 
-      const response = await fetch(
-        `/api/upload/program?filename=${file.name}`,
-        {
-          method: "POST",
-          body: file,
-        }
-      );
+      // const newBlob = (await response.json()) as PutBlobResult;
 
-      const newBlob = (await response.json()) as PutBlobResult;
+      // const res = await fetch("/api/upload/question", {
+      //   method: "POST",
+      //   body: JSON.stringify({
+      //     ...values,
+      //     reference_program_id: newBlob.url,
+      //   }),
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      // });
 
-      const res = await fetch("/api/upload/question", {
+      const feedback = await fetch("/api/get-data/get-feedback", {
         method: "POST",
         body: JSON.stringify({
-          ...values,
-          reference_program_id: newBlob.url,
+          language: "python",
+          reference_solution: await refFile.text(),
+          student_solution: await solfile.text(),
+          func: values.entry_function,
+          inputs: values.io_input,
+          args: values.func_args,
         }),
-        headers: {
-          "Content-Type": "application/json",
-        },
       });
+      feedback.json().then((data) => console.log(data.body))
     } catch (error) {
       console.error(error);
     }
@@ -75,7 +89,7 @@ export default function NewQuestionForm() {
   return (
     <div className="flex flex-col justify-center items-center max-w-lg">
       <Form {...form}>
-        <h2>Create new question</h2>
+        <h2>Create new question and get feedback</h2>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
             control={form.control}
@@ -106,7 +120,15 @@ export default function NewQuestionForm() {
           <FormItem>
             <FormLabel>Upload Reference Program</FormLabel>
             <FormControl>
-              <Input name="file" ref={inputFileRef} type="file" />
+              <Input name="file" ref={inputRefFileRef} type="file" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+          <h2>Submit Student Solution</h2>
+          <FormItem>
+            <FormLabel>Upload Solution Program</FormLabel>
+            <FormControl>
+              <Input name="file" ref={inputSolFileRef} type="file" />
             </FormControl>
             <FormMessage />
           </FormItem>

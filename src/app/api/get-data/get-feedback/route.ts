@@ -71,11 +71,10 @@ export async function POST(req: Request) {
         // Generates parsed student code and reference code
         const parsedStudentCode = await parseCode(unparsedStudentSolution);
         const parsedReferenceCode = await parseCode(unparsedReferenceSolution);
-
         const requestData = {
-            language: language,
-            reference_solution: JSON.stringify(parsedReferenceCode, null, 2), 
-            student_solution: JSON.stringify(parsedStudentCode, null, 2),
+            language: "py", // not "python" unlike the parser
+            reference_solution: JSON.stringify(parsedReferenceCode), 
+            student_solution: JSON.stringify(parsedStudentCode),
             function: func,
             inputs: inputs,
             args: args

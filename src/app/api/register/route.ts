@@ -12,15 +12,12 @@ export async function POST(req: Request) {
     };
     const hashed_password = await hash(password, 12);
 
+
     const user = await prisma.user.create({
       data: {
         email: email.toLowerCase(),
         password: hashed_password,
-        school_id: institution == 'NUS' ? 'inst001' :
-            institution == 'NTU'? 'inst002' :
-            institution == 'SMU'? 'inst003' :
-            institution == 'SIM'? 'inst004' :
-            institution == 'SUTD'? 'inst005': 'insterr',
+        school_id: institution,
         role: 'STUDENT'
       },
     });
