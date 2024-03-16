@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { Role } from "@prisma/client";
 
@@ -62,23 +63,23 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
-    // const courseId = courseCreator.school_id + "_" + code;
+    const courseId = school_id + "_" + code;
 
-    // const duplicateCourse = await prisma.course.findUnique({
-    //     where: {
-    //         id: courseId,
-    //     }
-    // })
+    const duplicateCourse = await prisma.course.findUnique({
+        where: {
+            id: courseId,
+        }
+    })
 
-    // if (duplicateCourse !== null) {
-    //     return new NextResponse(
-    //         JSON.stringify({
-    //           status: 'error',
-    //           message: 'Course already exists.',
-    //         }),
-    //         { status: 500 }
-    //       );
-    // }
+    if (duplicateCourse !== null) {
+        return new NextResponse(
+            JSON.stringify({
+              status: 'error',
+              message: 'Course already exists.',
+            }),
+            { status: 500 }
+          );
+    }
 
     const courseToCreate = await prisma.course.create({
       data: {
@@ -91,6 +92,7 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({
+      status: 'success',
       courseToCreate,
     });
   } catch (error: any) {

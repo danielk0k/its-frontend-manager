@@ -7,9 +7,13 @@ export default async function MyCourseView() {
   if (!user.props.user) {
     redirect("/");
   }
+
+  // Check if user role is 'TEACHER'
+  const isTeacher = user.props.user.role === 'TEACHER';
   return (
     <div>
-      MyCourseView<NewCourseDialog user={user.props.user}></NewCourseDialog>
+      MyCourseView
+      {isTeacher && <NewCourseDialog user={user.props.user}></NewCourseDialog>}
     </div>
   );
 }
