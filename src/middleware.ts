@@ -1,10 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { Role } from "@prisma/client";
 
 
-export async function middleware(request) {
-
+export async function middleware(request: NextRequest) {
   const secret = process.env.AUTH_SECRET;
   const token = await getToken({
     req: request,
@@ -15,6 +14,7 @@ export async function middleware(request) {
   // if (!token) return NextResponse.redirect(new URL("/signin", request.url));
 
   // Check the role and redirect based on the role
+  console.log(token)
   if (token) {
     switch (token.role) {
       case Role.ADMIN:
@@ -23,8 +23,7 @@ export async function middleware(request) {
         }
         break;
       case Role.TEACHER:
-        if (
-          !request.nextUrl.pathname.startsWith("/courses")) {
+        if (!request.nextUrl.pathname.startsWith("/courses")) {
           return NextResponse.redirect(new URL("/courses", request.url));
         }
         break;
@@ -34,7 +33,6 @@ export async function middleware(request) {
           return NextResponse.redirect(new URL("/courses", request.url));
         }
         break;
-
       default:
         return NextResponse.redirect(new URL("/signin", request.url));
     }
