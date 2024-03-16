@@ -7,6 +7,7 @@ export default async function MyCourseView() {
   if (!user.props.user) {
     redirect("/");
   }
+
   return (
     <div>
       MyCourseView<NewCourseDialog user={user.props.user}></NewCourseDialog>

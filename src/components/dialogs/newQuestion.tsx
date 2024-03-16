@@ -58,13 +58,6 @@ export default function NewQuestionDialog({ user, course_name }: { user: User, c
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check file type
-    const fileType = file.name.split('.').pop();
-    if (!['txt', 'c', 'py'].includes(fileType!)) {
-        alert('Invalid file type. Please select a txt, c, or py file.');
-        return null;
-    }
-
     // Read file as text
     const reader = new FileReader();
     reader.onload = function (event) {
@@ -77,20 +70,7 @@ export default function NewQuestionDialog({ user, course_name }: { user: User, c
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const res = await fetch("/api/question-management/create-question", {
-        method: "POST",
-        body: JSON.stringify({
-            user_id: user.id,
-            course_name: course_name,
-            title: values.title,
-            description: values.description,
-            language: values.language,
-            reference_program: solution,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const questionResponse = await fetch(`/api/question-management/get-all-questions?courseId=${params.courseId}&userId=${user.props.user.id}`);
       console.log(res)
     } catch (error) {
       console.error(error);
