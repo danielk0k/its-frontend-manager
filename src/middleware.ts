@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { Role } from "@prisma/client";
 
 
 export async function middleware(request) {
@@ -16,18 +17,18 @@ export async function middleware(request) {
   // Check the role and redirect based on the role
   if (token) {
     switch (token.role) {
-      case "ADMIN":
+      case Role.ADMIN:
         if (!request.nextUrl.pathname.startsWith("/user-management")) {
           return NextResponse.redirect(new URL("/user-management", request.url));
         }
         break;
-      case "TEACHER":
+      case Role.TEACHER:
         if (
           !request.nextUrl.pathname.startsWith("/courses")) {
           return NextResponse.redirect(new URL("/courses", request.url));
         }
         break;
-      case "STUDENT":
+      case Role.STUDENT:
         // Add the paths that the student can access here
         if (!request.nextUrl.pathname.startsWith("/courses")) {
           return NextResponse.redirect(new URL("/courses", request.url));
