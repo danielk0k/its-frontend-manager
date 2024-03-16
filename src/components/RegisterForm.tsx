@@ -5,15 +5,16 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { z, TypeOf, object, string } from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button"
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
-
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
+    SelectLabel,
+    SelectGroup
   } from "@/components/ui/select"
 import {
   Form,
@@ -32,7 +33,14 @@ const formSchema = z.object({
 
 type CreateUserInput = TypeOf<typeof formSchema>;
 
+interface School {
+    id: string;
+    name: string;
+}
+
 export function RegisterForm() {
+    const [data, setData] = useState(null)
+    const [isLoading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false);
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
@@ -40,11 +48,35 @@ export function RegisterForm() {
       },
     })
 
+
+    useEffect(() => {
+      async function fetchData() {
+        try {
+          const res = await fetch('/api/get-data/get-schools', { method: 'GET' })
+          const data = await res.json()
+          setData(data)
+          setLoading(false)
+        } catch (e) {
+          console.error(e)
+        }
+      };
+      fetchData();
+
+    }, []);
+
+    if (!data) return <p>Loading Register Page...</p>
+    const schools: School[] = (data as { school_ids: School[] }).school_ids.map((school: School) => ({
+      id: school.id,
+      name: school.name,
+    }));
+
+    // if (data) return <p>{schools[0].name}</p> // this is just to check if the data is being fetched
+
     const {
-        reset,
-        handleSubmit,
-        register,
-        formState: { errors },
+      reset,
+      handleSubmit,
+      register,
+      formState: { errors },
       } = form;
 
       const onSubmitHandler: SubmitHandler<CreateUserInput> = async (values) => {
@@ -70,7 +102,6 @@ export function RegisterForm() {
           setSubmitting(false);
         }
       };
-
 
     return (
         <Form {...form}>
@@ -117,11 +148,12 @@ export function RegisterForm() {
                             </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                            <SelectItem value="NUS">NUS</SelectItem>
-                            <SelectItem value="NTU">NTU</SelectItem>
-                            <SelectItem value="SMU">SMU</SelectItem>
-                            <SelectItem value="SIM">SIM</SelectItem>
-                            <SelectItem value="SUTD">SUTD</SelectItem>
+                          <SelectGroup>
+                            <SelectLabel>Schools</SelectLabel>
+                            {schools.map((school) => (
+                              <SelectItem key={school.id} value={school.id}>{school.name}</SelectItem>
+                            ))}
+                          </SelectGroup>
                         </SelectContent>
                     </Select>
                     <FormMessage />
