@@ -92,9 +92,3 @@ export default async function MyCourseView() {
 
 
 
-
-
-    // <div>
-    //   MyCourseView
-    //   {isTeacher && <NewCourseDialog user={user.props.user}></NewCourseDialog>}
-    // </div>
