@@ -17,7 +17,7 @@ import {
     course_name,
   }: CourseCardProps) {
     return (
-      <Card style={{ width: '230px', height: '200px' }}>
+      <Card style={{ width: '230px', height: '150px' }}>
           <CardHeader>
             <CardTitle>{course_title}</CardTitle>
           </CardHeader>

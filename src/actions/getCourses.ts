@@ -15,8 +15,6 @@ export async function getCourses({ userEmail }: { userEmail: string }) {
         },
       });
 
-      console.log("hello")
-
       const courseUser = user;
   
       if (!user) {

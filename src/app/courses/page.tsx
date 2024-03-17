@@ -46,6 +46,11 @@ export default async function MyCourseView() {
             <TabsTrigger value="joinedcourses">Joined Courses</TabsTrigger>
             <TabsTrigger value="allcourses">All Courses</TabsTrigger>
         </TabsList>
+        {isTeacher && (
+          <div>
+            <NewCourseDialog user={user}></NewCourseDialog>
+          </div>
+        )}
         </div>
         <div className="col-span-7 border rounded-md p-4">
         {isTeacher && <TabsContent value="createdcourses" className="grid grid-cols-4 gap-4">
@@ -73,14 +78,7 @@ export default async function MyCourseView() {
         </TabsContent>
         </div>
     </section>
-    </Tabs>
-
-    {isTeacher && (
-          <div className="absolute bottom-12 right-12">
-            <NewCourseDialog user={user}></NewCourseDialog>
-          </div>
-        )}
-      
+    </Tabs>    
     </div>
 );
 }
