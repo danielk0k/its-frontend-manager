@@ -19,10 +19,28 @@ async function getData(): Promise<Users[]> {
   }
 }
 
+async function fetchInstitutions(): Promise<string[]> {
+  try {
+    const response = await fetch('/api/get-data/get-schools', {
+      method: 'GET',
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch institution data');
+    }
+    const data = await response.json();
+    return data.school.name;
+  } catch (error) {
+    console.error('Error fetching institution data:', error);
+    return [];
+  }
+}
+
 
 const User_Management_View: React.FC = () => {
-  const [institution, setInstitution] = useState(mockInstitutions[0].name); 
+  const [institution, setInstitution] = useState(""); 
   const [data, setData] = useState<Users[]>([]); // Declare and initialize data state
+  const [institutions, setInstitutions] = useState<string[]>([]);
+  
 
   useEffect(() => {
     const fetchDataAsync = async () => {
@@ -30,7 +48,17 @@ const User_Management_View: React.FC = () => {
       setData(result);
     };
     fetchDataAsync();
+
+    const fetchInstitutionsAsync = async () => {
+      const result = await fetchInstitutions();
+      setInstitutions(result);
+      if (result.length > 0) {
+        setInstitution(result[0]);
+      }
+    };
+    fetchInstitutionsAsync();
   }, []);
+
 
   return (
     <div>

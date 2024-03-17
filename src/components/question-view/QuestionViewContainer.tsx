@@ -13,16 +13,15 @@ import { Button } from "@/components/ui/button";
 import { getCodeFeedback } from "@/actions/getCodeFeedback";
 import { Question } from "@prisma/client";
 
+
 export default function QuestionViewContainer({
   question,
 }: {
   question: Question;
 }) {
   const [editorContent, setEditorContent] = useState("");
-  const handleEditorChange = (
-    event: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    setEditorContent(event.target.value);
+  const handleEditorChange = (value: string | undefined) => {
+    setEditorContent(value || "");
   };
   return (
     <ResizablePanelGroup direction="horizontal" className="min-h-screen">
@@ -34,7 +33,6 @@ export default function QuestionViewContainer({
             <Link href={`/courses/${question.courseId.substring(8)}`}>
               <Button variant="secondary">Return to course</Button>
             </Link>
-
           </div>
         </div>
       </ResizablePanel>
