@@ -9,7 +9,7 @@ export default async function QuestionView({
 }) {
   const question = await getQuestionInfo({
     questionId: params.questionId,
-    courseId: params.courseId,
+    courseId: params.courseId.toUpperCase(),
   });
 
   if (!question) {

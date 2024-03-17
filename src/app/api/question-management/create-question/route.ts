@@ -52,7 +52,11 @@ export async function POST(req: Request) {
           questions: updatedQuestions,
         },
       });
-      return NextResponse.redirect(`/courses/${course_name}`)
+
+      return NextResponse.json({
+        status: 'success',
+        newQuestion,
+      });
     } catch (error: any) {
       return new NextResponse(
         JSON.stringify({

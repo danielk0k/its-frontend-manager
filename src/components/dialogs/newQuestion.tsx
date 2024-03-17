@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { redirect } from "next/navigation";
+import { useRouter } from 'next/navigation'
 import {
   Dialog,
   DialogContent,
@@ -44,6 +44,7 @@ const formSchema = z.object({
 
 
 export default function NewQuestionDialog({ user, course_name }: { user: User, course_name: String }) {
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -86,8 +87,11 @@ export default function NewQuestionDialog({ user, course_name }: { user: User, c
           "Content-Type": "application/json",
         },
       });
+      const resBody = await res.json();
+      if (resBody.status == 'success') {
+        router.push('/courses/' + course_name);
+      }
       console.log(res)
-      redirect(`/courses/course_name`)
     } catch (error) {
       console.error(error);
     }

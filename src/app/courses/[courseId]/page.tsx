@@ -23,7 +23,7 @@ export default async function CourseView({
       redirect("/");
     }
 
-    const course = await getCourseInfo({courseId: `${user.school_id}_${params.courseId}`});
+    const course = await getCourseInfo({courseId: `${user.school_id}_${params.courseId.toUpperCase()}`});
     if (!course) {
       redirect("/courses")
     }
@@ -36,10 +36,10 @@ export default async function CourseView({
         <Tabs defaultValue="questions" asChild>
         <section className="grid grid-cols-8 gap-4 p-4">
             <div className="col-span-1 flex flex-col space-y-4">
-            <p className="text-lg font-semibold">{params.courseId}</p>
+            <p className="text-lg font-semibold">{params.courseId.toUpperCase()}</p>
             {/*Conditional rendering of "create new question" based on whether user is the creator of the course*/}
             {user && user.id === course.creator_id && (
-            <NewQuestionDialog user={user} course_name={params.courseId} />
+            <NewQuestionDialog user={user} course_name={params.courseId.toUpperCase()} />
             )}
             <TabsList>
                 <TabsTrigger value="home">Home</TabsTrigger>

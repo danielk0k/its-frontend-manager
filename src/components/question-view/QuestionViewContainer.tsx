@@ -39,7 +39,7 @@ export default function QuestionViewContainer({
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={50}>
         <div className="flex flex-col h-full">
-            <QuestionViewEditor handleEditorChange={handleEditorChange} />
+            <QuestionViewEditor language={question.language} handleEditorChange={handleEditorChange} />
             <div className="flex flex-col">
               <QuestionViewFeedback />
               <div className="items-center justify-center p-6">

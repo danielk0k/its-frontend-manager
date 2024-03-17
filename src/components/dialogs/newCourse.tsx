@@ -48,7 +48,7 @@ export default function NewCourseDialog({ user }: { user: User }) {
           user_id: user.id,
           user_role: user.role,
           school_id: user.school_id,
-          code: values.code,
+          code: values.code.toUpperCase(),
           name: values.name,
         }),
         headers: {
@@ -74,8 +74,7 @@ export default function NewCourseDialog({ user }: { user: User }) {
         <DialogHeader>
           <DialogTitle>Create a new course</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
+            This action cannot be undone. Please ensure the details of the course is correct.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
