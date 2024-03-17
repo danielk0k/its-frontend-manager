@@ -1,25 +1,30 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { Role } from "@prisma/client";
+import { auth } from "./lib/auth";
 
-
-export async function middleware(request: NextRequest) {
+export default auth(async function middleware(request) {
+  const secureCookie = process.env.NODE_ENV === "production";
+  const cookieName = secureCookie
+    ? "__Secure-authjs.session-token"
+    : "authjs.session-token";
   const secret = process.env.AUTH_SECRET;
   const token = await getToken({
     req: request,
     secret: secret,
-    salt: "authjs.session-token"
+    secureCookie,
+    salt: cookieName,
   });
-  if (!token) console.log("null token")
-  // if (!token) return NextResponse.redirect(new URL("/signin", request.url));
+  if (!token) return NextResponse.redirect(new URL("/signin", request.url));
 
   // Check the role and redirect based on the role
-  console.log(token)
   if (token) {
     switch (token.role) {
       case Role.ADMIN:
         if (!request.nextUrl.pathname.startsWith("/user-management")) {
-          return NextResponse.redirect(new URL("/user-management", request.url));
+          return NextResponse.redirect(
+            new URL("/user-management", request.url)
+          );
         }
         break;
       case Role.TEACHER:
@@ -37,7 +42,7 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL("/signin", request.url));
     }
   }
-}
+});
 
 export const config = {
   matcher: [
