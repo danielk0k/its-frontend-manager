@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
 interface DataTableProps<TData, TValue> {
+  institution: string;
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   filterValue?: string;
@@ -38,6 +39,7 @@ function filterData<TData>(data: TData[], filterValue: string): TData[] {
 }
 
 export function DataTable<TData, TValue>({
+  institution,
   columns,
   data,
   filterValue,
@@ -66,10 +68,15 @@ export function DataTable<TData, TValue>({
       rowSelection,
     },
   })
-
+  
   return (
+
     <div>
-      <div className="absolute right-5 top-15">
+      <div className="flex items-center mb-5">
+        <p>
+          Manage Users in {institution} 
+        </p>    
+        <div className="ml-auto">
           <Input
             placeholder="Filter emails..."
             value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
@@ -78,7 +85,9 @@ export function DataTable<TData, TValue>({
             }
             className="max-w-sm"
           />
+        </div>
       </div>
+
       <div className="rounded-md border">
       <Table>
         <TableHeader>
