@@ -45,7 +45,7 @@ const formSchema = z.object({
 
 export default function NewQuestionDialog({ user, course_name }: { user: User, course_name: String }) {
   const router = useRouter();
-
+  const [open, setOpen] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -87,18 +87,15 @@ export default function NewQuestionDialog({ user, course_name }: { user: User, c
           "Content-Type": "application/json",
         },
       });
-      const resBody = await res.json();
-      if (resBody.status == 'success') {
-        router.push('/courses/' + course_name);
-      }
-      console.log(res)
+      router.refresh()
+      setOpen(false)
     } catch (error) {
       console.error(error);
     }
   }
   return (
     <>
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <Button variant="secondary">New question</Button>
       </DialogTrigger>

@@ -49,7 +49,9 @@ export async function POST(req: Request) {
           id: course?.id,
         },
         data: {
-          questions: updatedQuestions,
+          questions: {
+            set: updatedQuestions
+          }
         },
       });
 

@@ -57,7 +57,7 @@ export async function getCodeFeedback({
   student_solution: string;
 }) {
   try {
-    const { reference_program_id, entry_function, io_input, func_args } =
+    const { reference_program, entry_function, io_input, func_args } =
       question;
 
     // TODO: language is set to python for now
@@ -68,7 +68,7 @@ export async function getCodeFeedback({
 
     const unparsedReferenceSolution = {
       language: "python",
-      source_code: await fetch(reference_program_id).then((res) => res.text()),
+      source_code: await fetch(reference_program).then((res) => res.text()),
     };
 
     // Generates parsed student code and reference code
