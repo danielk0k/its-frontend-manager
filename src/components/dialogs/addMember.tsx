@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Course, User } from "@prisma/client";
+import { useState } from 'react';
 
 const formSchema = z.object({
   emails: z.string()
@@ -31,6 +32,7 @@ const formSchema = z.object({
 
 export default function AddMemberDialog({ user, course }: { user: User, course: Course }) {
   const router = useRouter();
+  const [open, setOpen] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -51,12 +53,14 @@ export default function AddMemberDialog({ user, course }: { user: User, course: 
           "Content-Type": "application/json",
         },
       });
+      router.refresh()
+      setOpen(false)
     } catch (error) {
       console.error(error);
     }
   }
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <Button variant="secondary">New Member</Button>
       </DialogTrigger>
