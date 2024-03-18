@@ -26,7 +26,7 @@ export default async function CourseView({
   }
 
   const courseQuestions: Question[] = course.questions;
-  const courseMemebers: User[] = course.members;
+  const courseMembers: User[] = course.members;
   return (
     <Tabs defaultValue="questions" asChild>
       <section className="grid grid-cols-8 gap-4 p-4">
@@ -55,7 +55,7 @@ export default async function CourseView({
               View your students and teachers here
               <AddMemberDialog user={user} course={course}></AddMemberDialog>
               <ul>
-                {courseMemebers.map((member, index) => (
+                {courseMembers.map((member, index) => (
                   <li key={index}>{`${member.email} [${member.role}]`}</li>
                 ))}
               </ul>
