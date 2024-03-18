@@ -29,8 +29,8 @@ export default function QuestionViewContainer({
         <div className="flex flex-col p-6">
           <h2 className="text-lg font-semibold mb-4">{question.title}</h2>
           <p>{question.description}</p>
-          <div className="fixed bottom-0 left-0 mb-4 ml-4">
-            <Link href={`/courses/${question.id}`}>
+          <div style={{ marginTop: 14}}>
+            <Link href={`/courses/${question.courseId.substring(8)}`}>
               <Button variant="secondary">Return to course</Button>
             </Link>
           </div>
@@ -39,7 +39,7 @@ export default function QuestionViewContainer({
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={50}>
         <div className="flex flex-col h-full">
-            <QuestionViewEditor handleEditorChange={handleEditorChange} />
+            <QuestionViewEditor language={question.language} handleEditorChange={handleEditorChange} />
             <div className="flex flex-col">
               <QuestionViewFeedback />
               <div className="items-center justify-center p-6">
