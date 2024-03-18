@@ -1,87 +1,23 @@
-'use client';
-import * as React from "react"
-import { useState, useEffect } from "react";
-import { Users, columns } from "./columns"
-import { DataTable } from "./data-table"
+import { getSchools } from "@/actions/getSchools";
 import { getUserProps } from "@/actions/getUserProps";
-import { School } from "@prisma/client";
+import { getUsers } from "@/actions/getUsers";
+import DataTableContainer from "@/components/user-management/DataTableContainer";
 
-
-async function getData(): Promise<Users[]> {
-  try {
-    const user = await getUserProps();
-    const response = await fetch(`/api/get-data/get-students?email=` + user.props.user.email);
-    if (!response.ok) {
-      throw new Error('Failed to fetch user data');
-    }
-    const data = await response.json();
-    return data.students;
-  } catch (error) {
-    console.error('Error fetching user data:', error);
-    return [];
-  }
-}
-
-async function fetchInstitution(): Promise<string> {
-  try {
-    const user = await getUserProps();
-    const response = await fetch('/api/get-data/get-schools', {
-      method: 'GET',
-    });
-    if (!response.ok) {
-      throw new Error('Failed to fetch institution data');
-    }
-    const data = await response.json();
-    console.log(data);
-    const parsed: School[] = data.school_ids.map((school: School) => ({
-      id: school.id,
-      name: school.name,
-    })); 
-    for (let index = 0; index < parsed.length; index++) {
-      if (parsed[index].id == user.props.user.school_id) {
-        return parsed[index].name;
-      }
-      
-    }
-
-    return data.school.school.name;
-  } catch (error) {
-    console.error('Error fetching institution data:', error);
-    return "";
-  }
-}
-
-
-const User_Management_View: React.FC = () => {
-  const [institution, setInstitution] = useState(""); 
-  const [data, setData] = useState<Users[]>([]); // Declare and initialize data state
-
-  useEffect(() => {
-    const fetchDataAsync = async () => {
-      setInstitution(await fetchInstitution());
-      const result = await getData();
-      setData(result);
-    };
-    fetchDataAsync();
-  }, []);
-
-
+export default async function UserManagementView() {
+  const user = await getUserProps();
+  const schools = await getSchools();
+  const users = await getUsers(user.props.user);
+  const { name } = schools.filter(
+    ({ id }) => id == user.props.user.school_id
+  )[0];
   return (
     <div>
       <main className="flex min-h-screen flex-col">
         <div className="z-10 max-w-5xl w-full justify-start font-mono text-sm lg:flex">
-          <div className="absolute left-5 top-18">
-            
-          </div>
-        </div> 
-        <div className="container mx-auto py-10">
-          <DataTable institution={institution} columns={columns} data={data}/>
-        </div> 
+          <div className="absolute left-5 top-18"></div>
+        </div>
+        <DataTableContainer name={name} users={users}></DataTableContainer>
       </main>
-        
     </div>
-  )
-
+  );
 }
-
-export default User_Management_View;

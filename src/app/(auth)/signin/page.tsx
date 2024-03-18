@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { LoginForm } from "@/components/LoginForm";
+import { LoginForm } from "@/components/auth/LoginForm";
 import Link from "next/link";
 
 export default async function SignInView() {
