@@ -1,45 +1,73 @@
-## Project 1 - Front-end Management System for ITS
+## Project 1 - Frontend Management System for ITS
 
-### Overview
+### Getting Started
 
-This project implements a front-end management system that provides ITS to real-world customers. It needs to have a nice UI and UX design, a robust database, and a flexible system framework. You need to think about how students and instructors will use ITS, and how they can be best benefited from ITS. The tasks in this project include:
+To get started with your own development, you will need the following prerequisites:
 
-- Analyze the stakeholder’s (e.g., students and instructors) requirements on how they would like to interact with the ITS. Note that, in this project, you may need to regularly discuss with stakeholders.
-- Design a framework of the management system that can generalize ITS to support various programming platforms. For example, Coursemology, SourceAcademy, LeetCode, etc.
-- Design a database and think about how you can efficiently store necessary information.
-- Deploy the framework in a mock-up environment and test it with a well-established testing strategy.
+1. A [Vercel account](https://vercel.com/signup)
+2. Basic knowledge of [Git](https://git-scm.com/doc) and [NPM](https://www.npmjs.com/)
 
-## Getting Started
+### Part 1: Set up a Vercel environment
 
-First, run the development server:
+> Please note that you are free to use your own preferred deployment and storage services. For the purpose of this project, we have chosen to use Vercel and its storage services ([Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres), [Vercel Blob](https://vercel.com/docs/storage/vercel-blob)) for ease of deployment.
+
+1. Fork this repository using these [steps](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo#forking-a-repository)
+2. Import the forked repository to Vercel using these [steps](https://vercel.com/docs/getting-started-with-vercel/import)
+3. Add the following environment variable during the import process
+
+```bash
+# Key: AUTH_SECRET
+# Value:
+openssl rand -base64 32
+```
+
+4. Follow the steps in this [guide](https://vercel.com/docs/storage/vercel-postgres/quickstart#create-a-postgres-database) to create and connect Vercel Postgres to your project _(similar steps for Vercel Blob)_
+
+### Part 2: Set up a local environment
+
+5. Clone the forked repository into your local drive
+6. Open up your command line and navigate to the project directory
+7. Create a local environment variable file `.env.local` with the following key-value retrieved from _Vercel.com > Your project > Settings > Environment Variables_
+
+```
+POSTGRES_URL=""
+POSTGRES_PRISMA_URL=""
+POSTGRES_URL_NO_SSL=""
+POSTGRES_URL_NON_POOLING=""
+POSTGRES_USER=""
+POSTGRES_HOST=""
+POSTGRES_PASSWORD=""
+POSTGRES_DATABASE=""
+BLOB_READ_WRITE_TOKEN=""
+AUTH_SECRET=""
+```
+
+> Alternatively, you may use the [Vercel CLI](https://vercel.com/docs/cli) and directly pull the environment variables from the deployed project _(requires additional set up)_
+
+```bash
+vercel env pull
+```
+
+9. Install the project dependencies and generate Prisma client
+
+```bash
+npm install
+```
+
+### Part 3: Initialise the database
+
+> At this point, you should have correctly configured the deployed project on Vercel and the local project environment
+
+10. Push the database schema and seed the database with some initial values
+
+```bash
+npx prisma db push
+npx prisma db seed
+```
+
+11. Finally you can view the deployed project or run a local development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Open http://localhost:3000 with your browser
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.

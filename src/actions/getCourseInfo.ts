@@ -10,6 +10,7 @@ export async function getCourseInfo({ courseId }: { courseId: string }) {
       },
       include: {
         questions: true,
+        members: true,
       },
     });
 

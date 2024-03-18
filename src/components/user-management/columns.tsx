@@ -15,8 +15,6 @@ import {
 export type Users = {
   email: string;
   role: string;
-  joinedDate: string;
-  action: null;
 };
 
 export const columns: ColumnDef<Users>[] = [
@@ -43,10 +41,6 @@ export const columns: ColumnDef<Users>[] = [
   {
     accessorKey: "role",
     header: "Role",
-  },
-  {
-    accessorKey: "joinedDate",
-    header: "Joined Date",
   },
   {
     accessorKey: "action",

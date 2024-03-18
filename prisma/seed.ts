@@ -87,27 +87,27 @@ async function main() {
     }
   })
 
-  const all_courses = prisma.course.createMany({
-    data: [
-      {
-        id: "inst001_CS3213",
-        code: "CS3213",
-        name: "Foundations of Software Engineering",
-        creator_id: teacher1.id,
-        school_id: teacher1.school_id,
-      },
-      {
-        id: "inst001_IS1103",
-        code: "IS1103",
-        name: "Ethics in Computing",
-        creator_id: teacher2.id,
-        school_id: teacher2.school_id,
-      }
-    ],
-    skipDuplicates: true,
-  })
-
-  prisma.$transaction([all_schools, admin_user, teacher_users, student_users, all_courses]);
+  prisma.$transaction([all_schools, admin_user, teacher_users, student_users]);
+  
+  // const all_courses = await prisma.course.createMany({
+  //   data: [
+  //     {
+  //       id: "inst001_CS3213",
+  //       code: "CS3213",
+  //       name: "Foundations of Software Engineering",
+  //       creator_id: teacher1.id,
+  //       school_id: teacher1.school_id,
+  //     },
+  //     {
+  //       id: "inst001_IS1103",
+  //       code: "IS1103",
+  //       name: "Ethics in Computing",
+  //       creator_id: teacher2.id,
+  //       school_id: teacher2.school_id,
+  //     }
+  //   ],
+  //   skipDuplicates: true,
+  // })
 }
 
 main()
