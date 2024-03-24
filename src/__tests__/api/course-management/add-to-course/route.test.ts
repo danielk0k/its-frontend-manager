@@ -27,9 +27,10 @@ describe('/api/course-management/add-to-course/route', () => {
       // Call the POST function
       const response = await POST(requestObj);
       const body = await response.json();
-
+        console.log(body)
       // Check the response
       expect(response.status).toBe(500);
+      expect(body.message).toEqual('You do not have the permission to make this request.');
 
     })
 
@@ -49,6 +50,7 @@ describe('/api/course-management/add-to-course/route', () => {
 
       // Check the response
       expect(response.status).toBe(500);
+      expect(body.message).toEqual('Not a valid user.');
 
     })
 
@@ -76,6 +78,7 @@ describe('/api/course-management/add-to-course/route', () => {
 
         // Check the response
         expect(response.status).toBe(500);
+        expect(body.message).toEqual('Invalid course ID.');
 
     })
 
@@ -119,7 +122,6 @@ describe('/api/course-management/add-to-course/route', () => {
 
         // Call the POST function
         const response = await POST(requestObj);
-        const body = await response.json();
 
         // Check the response
         expect(response.status).toBe(200);
