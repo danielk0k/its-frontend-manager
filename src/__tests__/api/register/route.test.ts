@@ -3,7 +3,7 @@
  * @jest-environment node
  */
 import { POST } from '../../../app/api/register/route'
-import { prismaMock } from '../../../singleton';
+import { prismaMock } from '@/prisma-mock';
 import { Role } from "@prisma/client";
 
 describe('/api/register', () => {
@@ -37,7 +37,7 @@ describe('/api/register', () => {
     // Call the POST function
     const response = await POST(requestObj);
     const body = await response.json();
-    
+
     // Check the response
     expect(response.status).toBe(200);
     expect(body).toEqual(expected_response)

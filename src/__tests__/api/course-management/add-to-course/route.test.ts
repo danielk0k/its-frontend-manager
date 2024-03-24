@@ -3,7 +3,7 @@
  * @jest-environment node
  */
 import { POST } from '@/app/api/course-management/add-to-course/route'
-import { prismaMock } from '@/singleton';
+import { prismaMock } from '@/prisma-mock';
 import { Role } from "@prisma/client";
 
 describe('/api/course-management/add-to-course/route', () => {
