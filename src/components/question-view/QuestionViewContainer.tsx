@@ -7,7 +7,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import QuestionViewEditor from "@/components/question-view/QuestionViewEditor";
-import QuestionViewFeedback from "@/components/question-view//QuestionViewFeedback";
+import QuestionViewFeedback, { FeedbackType } from "@/components/question-view//QuestionViewFeedback";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getCodeFeedback } from "@/actions/getCodeFeedback";
@@ -20,6 +20,7 @@ export default function QuestionViewContainer({
   question: Question;
 }) {
   const [editorContent, setEditorContent] = useState("");
+  const [feedbacks, setFeedbacks] = useState<FeedbackType[]>([]);
   const handleEditorChange = (value: string | undefined) => {
     setEditorContent(value || "");
   };
@@ -41,7 +42,7 @@ export default function QuestionViewContainer({
         <div className="flex flex-col h-full">
             <QuestionViewEditor language={question.language} handleEditorChange={handleEditorChange} />
             <div className="flex flex-col">
-              <QuestionViewFeedback />
+              <QuestionViewFeedback feedbacks={feedbacks} />
               <div className="items-center justify-center p-6">
                 <div className="flex mt-4">
                   <Button
@@ -50,7 +51,7 @@ export default function QuestionViewContainer({
                       await getCodeFeedback({
                         question: question,
                         student_solution: editorContent,
-                      })
+                      }).then(feedbacks => setFeedbacks(feedbacks))
                     }
                   >
                     Run Check

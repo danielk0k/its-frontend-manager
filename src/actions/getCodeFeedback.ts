@@ -43,11 +43,14 @@ const feedback = await fetch(process.env.URL + '/api/get-feedback', {
 
 */
 
-import { NextResponse } from "next/server";
 import { Question } from "@prisma/client";
 
 const parserApiUrl = "https://its.comp.nus.edu.sg/cs3213/parser";
 const feedbackFixApiUrl = "https://its.comp.nus.edu.sg/cs3213/feedback_fix";
+const language_map = {
+  py: "python",
+  c: "c",
+};
 
 export async function getCodeFeedback({
   question,
@@ -57,43 +60,40 @@ export async function getCodeFeedback({
   student_solution: string;
 }) {
   try {
-    const { reference_program, entry_function, io_input, func_args } =
-      question;
-
-    // TODO: language is set to python for now
-    const unparsedStudentSolution = {
-      language: "python",
-      source_code: student_solution,
-    };
-
-    const unparsedReferenceSolution = {
-      language: "python",
-      source_code: await fetch(reference_program).then((res) => res.text()),
-    };
+    const { reference_program, language } = question;
+    const reference_program_text = await fetch(reference_program).then((res) =>
+      res.text()
+    );
 
     // Generates parsed student code and reference code
-    const parsedStudentCode = await parseCode(unparsedStudentSolution);
-    const parsedReferenceCode = await parseCode(unparsedReferenceSolution);
-    const requestData = {
-      language: "py", // not "python" unlike the parser
-      reference_solution: JSON.stringify(parsedReferenceCode),
-      student_solution: JSON.stringify(parsedStudentCode),
-      function: entry_function,
-      inputs: io_input,
-      args: func_args,
-    };
+    const parsedStudentCode = await parseCode({
+      language: language_map[language],
+      source_code: student_solution,
+    });
+    const parsedReferenceCode = await parseCode({
+      language: language_map[language],
+      source_code: reference_program_text,
+    });
 
     // Generate feedback
-    const feedback = await generateFeedback(requestData);
-    return NextResponse.json({ body: feedback });
+    const feedback = await generateFeedback({
+      language: question.language,
+      reference_solution: JSON.stringify(parsedReferenceCode),
+      student_solution: JSON.stringify(parsedStudentCode),
+      function: question.entry_function,
+      inputs: question.io_input,
+      args: question.func_args,
+    });
+
+    return feedback;
   } catch (error) {
-    console.error("Error:", error);
-    throw error;
+    console.error(error);
+    return [];
   }
 }
 
 // Call the parser API
-async function parseCode(sourceCodeParams: any) {
+async function parseCode(sourceCodeParams) {
   try {
     const response = await fetch(parserApiUrl, {
       method: "POST",
@@ -115,7 +115,7 @@ async function parseCode(sourceCodeParams: any) {
 }
 
 // Call the Feedback service API
-async function generateFeedback(req: any): Promise<any> {
+async function generateFeedback(req): Promise<any> {
   try {
     const feedback = await fetch(feedbackFixApiUrl, {
       method: "POST",

@@ -16,6 +16,5 @@ export default async function QuestionView({
     redirect(`/courses/${params.courseId}`);
   }
 
-
   return <QuestionViewContainer question={question}></QuestionViewContainer>;
 }
