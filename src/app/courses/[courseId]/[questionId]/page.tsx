@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import QuestionViewContainer from "@/components/question-view/QuestionViewContainer";
 import { getQuestionInfo } from "@/actions/getQuestionInfo";
+import { getUserProps } from "@/actions/getUserProps";
 
 export default async function QuestionView({
   params,
@@ -16,5 +17,10 @@ export default async function QuestionView({
     redirect(`/courses/${params.courseId}`);
   }
 
-  return <QuestionViewContainer question={question}></QuestionViewContainer>;
+  const user = await getUserProps();
+  if (!user.props.user) {
+    redirect("/");
+  }
+
+  return <QuestionViewContainer question={question} user={user.props.user}></QuestionViewContainer>;
 }

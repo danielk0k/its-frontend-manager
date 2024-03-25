@@ -1,63 +1,51 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import { User, Question, Course, Submission } from "@prisma/client";
+import { getCodeFeedback } from "./getCodeFeedback";
 
-export async function createSubmission({ 
-  user_email, 
-  question_id, 
-  submitted_program 
-}: { 
-  user_email: string, 
-  question_id: string, 
-  submitted_program: string 
+export async function createSubmission({
+  user,
+  question,
+  student_solution_url,
+}: {
+  user: User;
+  question: Question & { course: Course; submissions: Submission[] };
+  student_solution_url: string;
 }) {
-    try {
-      const user = await prisma.user.findUnique({
-        where: {
-          email: user_email,
-        },
-      });
-  
-      if (!user) {
-        return null;
-      }
+  try {
+    const student_solution = await fetch(student_solution_url).then((res) =>
+      res.text()
+    );
 
-      const question = await prisma.question.findUnique({
-        where: {
-          id: question_id,
-        },
-        include: {
-            submissions: true,
-        },
-      });
+    const code_feedback = await getCodeFeedback({
+      question: question,
+      student_solution: student_solution,
+    });
 
-      const newSubmission = await prisma.submission.create({
-        data: {
-          user_id: user.id,
-          question_id: question_id,
-          submitted_program: submitted_program,
-        },
-      });
-  
-      const existingSubmissions = question?.submissions || [];
-      const updatedSubmissions = [...existingSubmissions, newSubmission];
-  
-      await prisma.question.update({
-        where: {
-          id: question?.id,
-        },
-        data: {
-          submissions: {
-            set: updatedSubmissions
-          }
-        },
-      });
+    const newSubmission = await prisma.submission.create({
+      data: {
+        user_id: user.id,
+        question_id: question.id,
+        submitted_program: student_solution_url,
+        feedback: JSON.stringify(code_feedback),
+      },
+    });
 
-      return newSubmission;
+    await prisma.question.update({
+      where: {
+        id: question.id,
+      },
+      data: {
+        submissions: {
+          set: [...question.submissions, newSubmission],
+        },
+      },
+    });
 
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
+    return newSubmission;
+  } catch (error) {
+    console.error(error);
+    return null;
   }
-  
+}
