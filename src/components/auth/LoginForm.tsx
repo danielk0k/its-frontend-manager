@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
+import { MailOutlined, LockOutlined } from '@ant-design/icons';
 
 import {
   Form,
@@ -19,16 +20,16 @@ import {
 } from "@/components/ui/form"
 
 const formSchema = z.object({
-    email: z.string(),
-    password: z.string(),
+  email: z.string().email({ message: 'Invalid email format' }),
+  password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
 })
 
 type LoginUserInput = TypeOf<typeof formSchema>;
 
 export function LoginForm() {
     const router = useRouter();
-    const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const callbackUrl = '/courses';
     const form = useForm<z.infer<typeof formSchema>>({
@@ -44,10 +45,10 @@ export function LoginForm() {
         formState: { errors },
     } = form;
 
-
     const onSubmitHandler: SubmitHandler<LoginUserInput> = async (values) => {
         try {
           setSubmitting(true);
+          setError(null);
 
           const res = await signIn('credentials', {
             redirect: false,
@@ -63,37 +64,42 @@ export function LoginForm() {
             router.push(callbackUrl);
           } else {
             reset({ password: '' });
-            const message = 'invalid email or password';
+            const message = "Invalid email or password";
             setError(message);
           }
         } catch (error: any) {
-
           setError(error.message);
         } finally {
           setSubmitting(false);
         }
       };
 
-    function handleForgotPasswordClick() {
-        console.log("Forgot password clicked");
-    }
-
     return (
         <Form {...form}>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: 15 }}>
-                <p style={{ fontWeight: "bold", fontSize: 20}}> Login</p>
-            </div>
+          {error && (
+            <p style={{ 
+              backgroundColor: '#ffcccc',
+              fontWeight: '500',
+              color: 'red',
+              padding: '10px',
+              borderRadius: '5px',
+              marginBottom: '10px',
+            }}>{error}</p>
+          )}
             <form onSubmit={handleSubmit(onSubmitHandler)}>
                 <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
                     <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Your email</FormLabel>
                     <FormControl>
-                        <Input placeholder="👤 Type your email" {...register('email')} />
+                    <div style={{display: 'flex', alignItems: 'center', marginBottom: 10, marginTop: 10 }}>
+                      <MailOutlined style={{marginRight: 8}}/>
+                      <Input style={{ width: "500px" }} placeholder="e.g. john@doe.com" {...register('email')}/>
+                    </div>
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage/>
                     </FormItem>
                 )}
                 />
@@ -102,21 +108,22 @@ export function LoginForm() {
                 name="password"
                 render={({ field }) => (
                     <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>Your password</FormLabel>
                     <FormControl>
-                        <Input type="password" placeholder="🔒 Type your password" {...register('password')} />
+                    <div style={{display: 'flex', alignItems: 'center', marginBottom: 10, marginTop: 10 }}>
+                      <LockOutlined style={{marginRight: 8}}/>
+                      <Input type="password" placeholder="e.g. iloveits123" {...register('password')}/>
+                    </div>
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage/>
                     </FormItem>
                 )}
                 />
 
-                <div style={{ textAlign: 'right' }}>
-                    <a href='#' onClick={handleForgotPasswordClick} style={{ fontSize: 9}} >Forgot Password?</a>
-                </div>
-
-                <div style={{ textAlign: 'center', paddingBottom: 15, paddingTop: 5 }}>
-                    <Button type="submit" style={{ width: 200, borderRadius: 10 }}>Login</Button>
+                <div style={{ textAlign: 'center', paddingBottom: 15, paddingTop: 10 }}>
+                    <Button type="submit" style={{ width: 200, borderRadius: 10 }} disabled={submitting}>
+                      {submitting ? 'Logging in...' : 'Login'}
+                    </Button>
                 </div>
             </form>
 

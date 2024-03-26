@@ -6,27 +6,29 @@ import { getSchools } from "@/actions/getSchools";
 export default async function SignUpView() {
   const schools = await getSchools()
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
-      <div style={{ flex: "70%" }}>{/* to add image */}</div>
-      <div style={{ flex: "30%", backgroundColor: "#ccc", padding: "20px" }}>
+    <div className="flex justify-center items-center h-screen" style={{ 
+      background: `
+        linear-gradient(to bottom, #e0f2f1, #b2dfdb),
+        repeating-linear-gradient(
+          45deg,
+          rgba(178, 223, 219, 0.1),
+          rgba(178, 223, 219, 0.1) 10px,
+          transparent 10px,
+          transparent 20px
+        )
+      `
+    }}>
+      <div className="max-w-md p-8 bg-white rounded-lg shadow-lg">
+        <h2 className="text-2xl font-semibold mb-7 text-center">ITS Frontend System Sign Up</h2>
         <RegisterForm schools={schools} />
-        <div
-          style={{
-            justifyContent: "space-between",
-            alignItems: "center",
-            display: "flex",
-          }}
-        >
-          <div style={{ display: "flex" }}>
-            <p style={{ color: "gray" }}> Have an account? </p>
-          </div>
-          <div>
-            <Button variant="link">
-              <Link href="/signin">Login now</Link>
-            </Button>
-          </div>
-        </div>
+        <div className="mt-4 flex items-center justify-center">
+        <p className="ml-2">Have an account? </p>
+        <Button variant="link">
+          <Link href="/signin">Login now</Link>
+        </Button>
+      </div>
       </div>
     </div>
   );
 }
+
