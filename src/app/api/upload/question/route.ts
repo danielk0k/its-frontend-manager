@@ -8,34 +8,56 @@ import prisma from "@/lib/prisma";
  * Retrieve question id using data.id
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  const { reference_program_id, ...content } = await request.json();
+  try {
+    const { reference_program, courseId, ...content } = await request.json();
 
-  if (!content) {
-    return NextResponse.json(
-      { body: "Expected question content" },
-      { status: 500 }
-    );
-  }
+    if (!content) {
+      throw new Error("Expected question content.");
+    }
 
-  if (!content.title) {
-    return NextResponse.json(
-      { body: "Expected question title in content." },
-      { status: 500 }
-    );
-  }
+    if (!courseId) {
+      throw new Error("Expected course id.");
+    }
 
-  if (!reference_program_id) {
-    return NextResponse.json(
-      {
-        body: "Expected reference program id. Please upload the reference program first.",
+    if (!reference_program) {
+      throw new Error(
+        "Expected reference program id. Please upload the reference program first."
+      );
+    }
+
+    const question = await prisma.question.create({
+      data: {
+        ...content,
+        reference_program: reference_program,
+        course: {
+          connect: { id: courseId },
+        },
       },
-      { status: 500 }
-    );
+    });
+
+    const course = await prisma.course.findUnique({
+      where: {
+        id: courseId,
+      },
+      include: {
+        questions: true,
+      },
+    });
+
+    await prisma.course.update({
+      where: {
+        id: courseId,
+      },
+      data: {
+        questions: {
+          set: [...course.questions, question],
+        },
+      },
+    });
+
+    return NextResponse.json(question, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ body: error.message }, { status: 500 });
   }
-
-  const data = await prisma.question.create({
-    data: { ...content, reference_program_id: reference_program_id },
-  });
-
-  return NextResponse.json(data, { status: 200 });
 }
