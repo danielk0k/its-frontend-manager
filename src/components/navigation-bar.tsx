@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "next-auth";
+import { signOut } from "next-auth/react";
 
 const PAGE_ROUTES = {
   user: [{ label: "My Courses", url: "/courses/" }],
@@ -51,8 +52,7 @@ export default function NavigationBar({
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>PIC</AvatarFallback>
+              <AvatarImage src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Placeholder_no_text.svg" />
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -62,10 +62,7 @@ export default function NavigationBar({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href="/">Change Password</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Link href="/api/auth/signout">Sign Out</Link>
+              <p style={{ marginLeft: 27 }} onClick={() => signOut()}>Sign out</p>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

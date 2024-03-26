@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { User } from "@prisma/client";
+import { useState } from 'react';
 
 const formSchema = z.object({
   code: z.string(),
@@ -40,8 +41,12 @@ export default function NewCourseDialog({ user }: { user: User }) {
     },
   });
 
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      setSubmitting(true);
       const res = await fetch("/api/course-management/create-course", {
         method: "POST",
         body: JSON.stringify({
@@ -58,23 +63,38 @@ export default function NewCourseDialog({ user }: { user: User }) {
 
       const resBody = await res.json();
       if (resBody.status == 'success') {
-        router.push('/courses/' + values.code);
+        setSuccess(true);
+        setTimeout(() => {
+          router.push('/courses/' + values.code);
+        }, 1000);
       }
-
     } catch (error) {
       console.error(error);
+    } finally {
+      setSubmitting(false);
     }
   }
   return (
     <Dialog>
+
       <DialogTrigger>
         <Button variant="secondary">New Course</Button>
       </DialogTrigger>
       <DialogContent>
+      {success && 
+        <p style={{
+          backgroundColor: '#D1E7DD',
+          color: '#155724',
+          padding: '10px',
+          borderRadius: '5px',
+          textAlign: 'center',
+          marginBottom: '10px',
+        }}>Course created successfully!</p>
+      }
         <DialogHeader>
           <DialogTitle>Create a new course</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. Please ensure the details of the course is correct.
+            This action cannot be reversed. Please review the course details carefully before proceeding.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -105,7 +125,9 @@ export default function NewCourseDialog({ user }: { user: User }) {
                 </FormItem>
               )}
             />
-            <Button type="submit">Submit</Button>
+            <Button type="submit" disabled={submitting}>
+              {submitting ? 'Submitting...' : 'Submit'}
+            </Button>
           </form>
         </Form>
       </DialogContent>
