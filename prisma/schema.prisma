@@ -11,18 +11,33 @@ datasource db {
 }
 
 model Question {
-  id                   String   @id @unique @default(cuid())
-  title                String
-  description          String
-  language             String
-  entry_function       String?
-  io_input             String?
-  func_args            String?
-  reference_program    String   @unique
-  course               Course   @relation(fields: [courseId], references: [id])
-  courseId             String
+  id                String       @id @unique @default(cuid())
+  title             String
+  description       String
+  language          String
+  entry_function    String?
+  io_input          String?
+  func_args         String?
+  reference_program String       @unique
+  course            Course       @relation(fields: [courseId], references: [id])
+  courseId          String
+  submissions       Submission[]
 
   @@map("questions")
+}
+
+model Submission {
+  id                String   @id @unique @default(cuid())
+  submit_time       DateTime @default(now())
+  question          Question @relation(fields: [question_id], references: [id])
+  question_id       String
+  user              User     @relation(fields: [user_id], references: [id])
+  user_id           String
+  submitted_program String
+  feedback          String?
+  grade             Int?
+
+  @@map("submissions")
 }
 
 enum Role {
@@ -32,38 +47,39 @@ enum Role {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  email         String?   @unique
-  password      String?
-  role          Role?
-  school        School   @relation(fields: [school_id], references: [id])
-  school_id     String
-  accounts      Account[]
-  created_courses Course[] @relation("course_creator")
-  joined_courses Course[]  @relation("course_members")
+  id              String       @id @default(uuid())
+  email           String?      @unique
+  password        String?
+  role            Role?
+  school          School       @relation(fields: [school_id], references: [id])
+  school_id       String
+  accounts        Account[]
+  created_courses Course[]     @relation("course_creator")
+  joined_courses  Course[]     @relation("course_members")
+  submissions     Submission[]
 
   @@map("users")
 }
 
 model School {
-  id            String    @id
-  name          String
-  users         User[]
-  courses       Course[]
+  id      String   @id
+  name    String
+  users   User[]
+  courses Course[]
 
   @@map("schools")
 }
 
 model Course {
-  id            String    @id
-  code          String
-  name          String
-  creator       User     @relation("course_creator", fields: [creator_id], references: [id])
-  creator_id    String
-  school        School   @relation(fields: [school_id], references: [id])
-  school_id     String
-  members       User[]    @relation("course_members")
-  questions     Question[]
+  id         String     @id
+  code       String
+  name       String
+  creator    User       @relation("course_creator", fields: [creator_id], references: [id])
+  creator_id String
+  school     School     @relation(fields: [school_id], references: [id])
+  school_id  String
+  members    User[]     @relation("course_members")
+  questions  Question[]
 
   @@map("courses")
 }

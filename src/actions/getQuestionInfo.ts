@@ -14,6 +14,7 @@ export async function getQuestionInfo({ questionId, courseId }: { questionId: st
       },
       include: {
         course: true,
+        submissions: true,
       },
     });
 

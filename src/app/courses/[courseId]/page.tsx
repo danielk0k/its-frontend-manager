@@ -34,7 +34,7 @@ export default async function CourseView({
         <div className="col-span-1 flex flex-col space-y-4">
           <p className="text-lg font-semibold">{params.courseId}</p>
           {user && user.id === course.creator_id && (
-            <NewQuestionDialog user={user} course_name={params.courseId.toUpperCase()} />
+            <NewQuestionDialog courseId={course.id} />
             )}
           <TabsList>
             <TabsTrigger value="home">Home</TabsTrigger>

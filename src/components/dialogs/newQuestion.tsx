@@ -1,18 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from 'next/navigation'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import type { PutBlobResult } from "@vercel/blob";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -24,90 +17,98 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-  } from "@/components/ui/select"
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { User } from "@prisma/client";
-import { DialogClose } from "@radix-ui/react-dialog";
 
 const formSchema = z.object({
-    title: z.string(),
-    description: z.string(),
-    language: z.string(),
-    referenceSolution: z.string(),
-  });
+  title: z.string(),
+  description: z.string(),
+  language: z.string(),
+  entry_function: z.string(),
+  io_input: z.string(),
+  func_args: z.string(),
+});
 
-
-export default function NewQuestionDialog({ user, course_name }: { user: User, course_name: String }) {
+export default function NewQuestionForm({ courseId }: { courseId: string }) {
   const router = useRouter();
+  const inputRefFileRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-        title: "",
-        description: "",
-        language: "",
-        referenceSolution: "",
+      title: "",
+      description: "",
+      language: "",
+      entry_function: "main",
+      io_input: "[]",
+      func_args: "",
     },
   });
 
-  const [solution, setReferenceSolution] = useState<String | null>(null);
-
-  function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Read file as text
-    const reader = new FileReader();
-    reader.onload = function (event) {
-        const fileContent = event.target!.result as string;
-        setReferenceSolution(fileContent)
-        
-    };
-    reader.readAsText(file);
-}
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const res = await fetch("/api/question-management/create-question", {
+      if (!inputRefFileRef.current?.files) {
+        throw new Error("No file selected");
+      }
+
+      const refFile = inputRefFileRef.current.files[0];
+      const response = await fetch(
+        `/api/upload/program?filename=${refFile.name}`,
+        {
+          method: "POST",
+          body: refFile,
+        }
+      );
+
+      const newBlob = (await response.json()) as PutBlobResult;
+      const res = await fetch("/api/upload/question", {
         method: "POST",
         body: JSON.stringify({
-            user_id: user.id,
-            course_name: course_name,
-            title: values.title,
-            description: values.description,
-            language: values.language,
-            reference_program: solution,
+          ...values,
+          courseId: courseId,
+          reference_program: newBlob.url,
         }),
         headers: {
           "Content-Type": "application/json",
         },
       });
-      router.refresh()
-      setOpen(false)
+      setOpen(false);
+      form.reset()
+      router.refresh();
     } catch (error) {
       console.error(error);
     }
   }
   return (
-    <>
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <Button variant="secondary">New question</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create a new question for your course</DialogTitle>
+          <DialogTitle>Create a new question</DialogTitle>
           <DialogDescription>
-            Questions set cannot be edited! Please ensure all question parameters are set correctly!
+            Ensure all question parameters are set correctly
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
             <FormField
               control={form.control}
               name="title"
@@ -128,48 +129,87 @@ export default function NewQuestionDialog({ user, course_name }: { user: User, c
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea {...field}/>
+                    <Textarea {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-             <FormField
+            <FormField
               control={form.control}
               name="language"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Programming Language</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select a programming languange" />
-                        </SelectTrigger>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a programming languange" />
+                      </SelectTrigger>
                     </FormControl>
-                  <SelectContent>
-                    <SelectItem value="py">Python</SelectItem>
-                    <SelectItem value="c">C</SelectItem>
-                  </SelectContent>
-                </Select>
+                    <SelectContent>
+                      <SelectItem value="py">Python</SelectItem>
+                      <SelectItem value="c">C</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </FormItem>
               )}
             />
             <FormItem>
               <FormLabel>Upload Reference Solution</FormLabel>
               <FormControl>
-                <Input type="file" onChange={handleFileUpload} />
+                <Input name="file" ref={inputRefFileRef} type="file" />
               </FormControl>
               <FormDescription>
-                Upload a file containing the reference solution.
+                Upload a file containing the reference solution
               </FormDescription>
             </FormItem>
-            <DialogClose asChild>
-               <Button type="submit">Submit</Button>
-            </DialogClose>
+            <FormField
+              control={form.control}
+              name="entry_function"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Entry Function</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="io_input"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>IO Inputs</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="func_args"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Function Arguments</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit">Submit</Button>
           </form>
         </Form>
       </DialogContent>
     </Dialog>
-    </>
   );
 }

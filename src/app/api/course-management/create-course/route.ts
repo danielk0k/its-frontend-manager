@@ -5,9 +5,11 @@ import { Role } from "@prisma/client";
 
 // example usage:
 // const reqdata = {
-//     email: 'test1@test.com',
-//     code: 'CS3213',
-//     name: 'Foundations of Software Engineering',
+//    user_id: user.id,
+//    user_role: user.role,
+//    school_id: user.school_id,
+//    code: values.code.toUpperCase(),
+//    name: values.name,
 // };
 
 // const res4 = await fetch(process.env.URL + '/api/course-management/create-course', {
