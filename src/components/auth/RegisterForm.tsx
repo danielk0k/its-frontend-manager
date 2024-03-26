@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z, TypeOf } from "zod";
@@ -24,16 +25,21 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { School } from "@prisma/client";
+import { MailOutlined, LockOutlined, BankOutlined } from '@ant-design/icons';
 
 const formSchema = z.object({
-  email: z.string(),
-  password: z.string(),
-  institution: z.string(),
+  email: z.string().email({ message: 'Invalid email format' }),
+  password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
+  institution: z.string().min(1, { message: 'Select a valid institution '}),
 });
 
 type CreateUserInput = TypeOf<typeof formSchema>;
 
 export function RegisterForm({ schools }: { schools: School[] }) {
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<boolean>(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,6 +58,9 @@ export function RegisterForm({ schools }: { schools: School[] }) {
 
   const onSubmitHandler: SubmitHandler<CreateUserInput> = async (values) => {
     try {
+      setSubmitting(true);
+      setError(null);
+
       const res = await fetch("/api/register", {
         method: "POST",
         body: JSON.stringify(values),
@@ -59,43 +68,63 @@ export function RegisterForm({ schools }: { schools: School[] }) {
           "Content-Type": "application/json",
         },
       });
+
       if (!res.ok) {
         const message = (await res.json()).message;
+        if (message.includes('Invalid `prisma.user.create()` invocation')) {
+          setError('This email address is already registered.');
+        } else {
+          setError('An error occurred during registration.');
+        }
         return;
       }
 
-      signIn(undefined, { callbackUrl: "/" });
+      setSuccess(true); 
+      setTimeout(() => {
+        signIn(undefined, { callbackUrl: "/" }); 
+      }, 3000); 
+
     } catch (error) {
       console.error(error)
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
     <Form {...form}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          paddingBottom: 15,
-        }}
-      >
-        <p style={{ fontWeight: "bold", fontSize: 20 }}>
-          {" "}
-          Account Registration
-        </p>
-      </div>
+        {error && (
+          <p style={{ 
+            backgroundColor: '#ffcccc',
+            fontWeight: '500',
+            color: 'red',
+            padding: '10px',
+            borderRadius: '5px',
+            marginBottom: '10px',
+          }}>{error}</p>
+        )}
+        {success && (
+          <p style={{ 
+            backgroundColor: '#ccffcc',
+            fontWeight: '500',
+            color: 'green',
+            padding: '10px',
+            borderRadius: '5px',
+            marginBottom: '10px',
+            fontSize: '10px'
+          }}>Registration successful. Redirecting to sign-in...</p>
+        )}
       <form onSubmit={handleSubmit(onSubmitHandler)}>
         <FormField
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>Your email</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="👤 Type your email"
-                  {...register("email")}
-                />
+              <div style={{display: 'flex', alignItems: 'center', marginBottom: 10, marginTop: 10 }}>
+                <MailOutlined style={{marginRight: 8}}/>
+                <Input style={{width: "500px" }}placeholder="e.g. john@doe.com" {...register('email')}/>
+              </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -106,13 +135,12 @@ export function RegisterForm({ schools }: { schools: School[] }) {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Your password</FormLabel>
               <FormControl>
-                <Input
-                  type="password"
-                  placeholder="🔒 Type your password"
-                  {...register("password")}
-                />
+              <div style={{display: 'flex', alignItems: 'center', marginBottom: 5, marginTop: 10 }}>
+                <LockOutlined style={{marginRight: 8}}/>
+                <Input type="password" placeholder="e.g. iloveits123" {...register('password')}/>
+              </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -124,19 +152,21 @@ export function RegisterForm({ schools }: { schools: School[] }) {
           name="institution"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Institution</FormLabel>
+              <FormLabel>Your institution</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
+                <div style={{display: 'flex', alignItems: 'center', marginBottom: 5, marginTop: 10 }}>
+                  <BankOutlined style={{marginRight: 8}}/>
                   <SelectTrigger>
                     <SelectValue
-                      placeholder="🏫 Select Institution"
+                      placeholder="Select Institution"
                       {...register("institution")}
                     />
                   </SelectTrigger>
+                </div>
                 </FormControl>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Schools</SelectLabel>
                     {schools.map((school) => (
                       <SelectItem key={school.id} value={school.id}>
                         {school.name}
@@ -151,7 +181,7 @@ export function RegisterForm({ schools }: { schools: School[] }) {
         />
         <div style={{ textAlign: "center", paddingBottom: 15, paddingTop: 20 }}>
           <Button type="submit" style={{ width: 200, borderRadius: 10 }}>
-            Register
+            {submitting ? "Registering..." : "Register"}
           </Button>
         </div>
       </form>
