@@ -123,7 +123,7 @@ export function RegisterForm({ schools }: { schools: School[] }) {
               <FormControl>
               <div style={{display: 'flex', alignItems: 'center', marginBottom: 10, marginTop: 10 }}>
                 <MailOutlined style={{marginRight: 8}}/>
-                <Input style={{width: "500px" }}placeholder="e.g. john@doe.com" {...register('email')}/>
+                <Input style={{ width: "500px" }}placeholder="e.g. john@doe.com" {...register('email')}/>
               </div>
               </FormControl>
               <FormMessage />
@@ -137,7 +137,7 @@ export function RegisterForm({ schools }: { schools: School[] }) {
             <FormItem>
               <FormLabel>Your password</FormLabel>
               <FormControl>
-              <div style={{display: 'flex', alignItems: 'center', marginBottom: 5, marginTop: 10 }}>
+              <div style={{display: 'flex', alignItems: 'center', marginBottom: 10, marginTop: 10 }}>
                 <LockOutlined style={{marginRight: 8}}/>
                 <Input type="password" placeholder="e.g. iloveits123" {...register('password')}/>
               </div>
@@ -155,7 +155,7 @@ export function RegisterForm({ schools }: { schools: School[] }) {
               <FormLabel>Your institution</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                <div style={{display: 'flex', alignItems: 'center', marginBottom: 5, marginTop: 10 }}>
+                <div style={{display: 'flex', alignItems: 'center', marginBottom: 10, marginTop: 10 }}>
                   <BankOutlined style={{marginRight: 8}}/>
                   <SelectTrigger>
                     <SelectValue
@@ -179,7 +179,7 @@ export function RegisterForm({ schools }: { schools: School[] }) {
             </FormItem>
           )}
         />
-        <div style={{ textAlign: "center", paddingBottom: 15, paddingTop: 20 }}>
+        <div style={{ textAlign: "center", paddingBottom: 15, paddingTop: 10 }}>
           <Button type="submit" style={{ width: 200, borderRadius: 10 }}>
             {submitting ? "Registering..." : "Register"}
           </Button>

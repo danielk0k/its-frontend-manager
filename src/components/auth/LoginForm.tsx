@@ -110,7 +110,7 @@ export function LoginForm() {
                     <FormItem>
                     <FormLabel>Your password</FormLabel>
                     <FormControl>
-                    <div style={{display: 'flex', alignItems: 'center', marginBottom: 5, marginTop: 10 }}>
+                    <div style={{display: 'flex', alignItems: 'center', marginBottom: 10, marginTop: 10 }}>
                       <LockOutlined style={{marginRight: 8}}/>
                       <Input type="password" placeholder="e.g. iloveits123" {...register('password')}/>
                     </div>
