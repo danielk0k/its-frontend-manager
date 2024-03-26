@@ -10,11 +10,6 @@ export async function getUsers(user: User) {
         where: {
           school_id: user.school_id,
         },
-        select: {
-          email: true,
-          role: true,
-          school_id: true,
-        },
       });
 
       return users;

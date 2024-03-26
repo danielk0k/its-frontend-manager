@@ -4,7 +4,7 @@ import Link from "next/link";
 import { getSchools } from "@/actions/getSchools";
 
 export default async function SignUpView() {
-  const schools = await getSchools()
+  const schools = await getSchools().then(schools => schools ? schools : []);
   return (
     <div className="flex justify-center items-center h-screen" style={{ 
       background: `

@@ -4,10 +4,16 @@ import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { getUserProps } from "./getUserProps";
 
-export async function getQuestionInfo({ questionId, courseId }: { questionId: string; courseId: string }) {
+export async function getQuestionInfo({
+  questionId,
+  courseId,
+  schoolId,
+}: {
+  questionId: string;
+  courseId: string;
+  schoolId: string;
+}) {
   try {
-    const user = await getUserProps()
-
     const question = await prisma.question.findUnique({
       where: {
         id: questionId,
@@ -18,7 +24,7 @@ export async function getQuestionInfo({ questionId, courseId }: { questionId: st
       },
     });
 
-    if (!question || question.courseId !== user.props.user.school_id + "_" + courseId) {
+    if (!question || question.courseId !== schoolId + "_" + courseId) {
       redirect(`/courses/${courseId}`);
     }
     return question;

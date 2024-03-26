@@ -11,13 +11,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { User } from "@prisma/client";
 
-export type Users = {
-  email: string;
-  role: string;
-};
-
-export const columns: ColumnDef<Users>[] = [
+export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "select",
     header: "Select",
@@ -47,14 +43,14 @@ export const columns: ColumnDef<Users>[] = [
     header: "Action",
     cell: ({ row }) => {
       const email = row.original.email; // Extracting email from the row data
-      return <ActionDropdown email={email} />;
+      return <ActionDropdown email={email || ""} />;
     },
   },
 ];
 
 // Define a separate component for the dropdown menu
 const ActionDropdown: React.FC<{ email: string }> = ({ email }) => {
-  const [users, setUsers] = React.useState<Users[]>([]);
+  const [users, setUsers] = React.useState<User[]>([]);
   const [error, setError] = React.useState<string | null>(null); 
 
   const promoteToTeacher = async () => {

@@ -27,7 +27,7 @@ export default async function MyCourseView() {
   //fetch courses
   
   
-  const courseUser = await getCourses({userEmail: `${user.email}`}); //user with courses values
+  const courseUser = await getCourses({userEmail: `${user.email}`}).then(courses => courses ? courses : {created_courses: [], joined_courses: []}); //user with courses values
   const joinedCourses = courseUser.joined_courses;
   const createdCourses = courseUser.created_courses;
 

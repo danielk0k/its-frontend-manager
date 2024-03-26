@@ -2,13 +2,18 @@ import { getSchools } from "@/actions/getSchools";
 import { getUserProps } from "@/actions/getUserProps";
 import { getUsers } from "@/actions/getUsers";
 import DataTableContainer from "@/components/user-management/DataTableContainer";
+import { redirect } from "next/navigation";
 
 export default async function UserManagementView() {
-  const user = await getUserProps();
-  const schools = await getSchools();
-  const users = await getUsers(user.props.user);
+  const userProps = await getUserProps();
+  const user = userProps.props.user;
+  if (!user) {
+    redirect("/");
+  }
+  const users = await getUsers(user).then(users => users ? users : []);
+  const schools = await getSchools().then(schools => schools ? schools : []);
   const { name } = schools.filter(
-    ({ id }) => id == user.props.user.school_id
+    ({ id }) => id == user.school_id
   )[0];
   return (
     <div>

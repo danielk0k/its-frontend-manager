@@ -44,6 +44,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       },
     });
 
+    if (!course) {
+      throw new Error("Unable to find course")
+    }
+
     await prisma.course.update({
       where: {
         id: courseId,
