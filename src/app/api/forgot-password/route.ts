@@ -1,6 +1,8 @@
 import { hash } from 'bcryptjs';
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import {sendPasswordResetEmail} from '@/lib/send-reset-email';
+import { createPasswordResetToken } from '@/lib/tokens';
 
 export async function POST(req: Request) {
   try {
@@ -24,7 +26,11 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     } else {
-      // user exists 
+      // user exists
+      console.log(user.email)
+      const passwordResetToken = await createPasswordResetToken(user.email)
+      await sendPasswordResetEmail(user.email, passwordResetToken.token);
+
       return NextResponse.json({
         reset: {
           email: user.email,

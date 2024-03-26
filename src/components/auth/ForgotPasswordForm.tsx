@@ -54,8 +54,6 @@ export function ForgotPasswordForm() {
                 },
             });
 
-            console.log(res)
-
             if (!res.ok) {
                 const message = (await res.json()).message;
                 return;
