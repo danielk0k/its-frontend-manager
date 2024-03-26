@@ -8,19 +8,21 @@ export default async function QuestionView({
 }: {
   params: { questionId: string; courseId: string };
 }) {
+  const userProps = await getUserProps();
+  const user = userProps.props.user;
+  if (!user) {
+    redirect("/");
+  }
+
   const question = await getQuestionInfo({
     questionId: params.questionId,
     courseId: params.courseId.toUpperCase(),
+    schoolId: user.school_id,
   });
 
   if (!question) {
     redirect(`/courses/${params.courseId}`);
   }
 
-  const user = await getUserProps();
-  if (!user.props.user) {
-    redirect("/");
-  }
-
-  return <QuestionViewContainer question={question} user={user.props.user}></QuestionViewContainer>;
+  return <QuestionViewContainer question={question} user={user}></QuestionViewContainer>;
 }
