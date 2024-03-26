@@ -112,7 +112,7 @@ export function LoginForm() {
                 />
 
                 <div style={{ textAlign: 'right' }}>
-                    <a href='#' onClick={handleForgotPasswordClick} style={{ fontSize: 9}} >Forgot Password?</a>
+                    <a href='/forgot-password' onClick={handleForgotPasswordClick} style={{ fontSize: 9}} >Forgot Password?</a>
                 </div>
 
                 <div style={{ textAlign: 'center', paddingBottom: 15, paddingTop: 5 }}>
