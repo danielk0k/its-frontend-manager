@@ -21,7 +21,7 @@ export default async function SignInView() {
         <h2 className="text-2xl font-semibold mb-7 text-center">ITS Frontend System Log In</h2>
         <LoginForm />
         <div className="mt-4 flex items-center justify-center">
-        <p className="ml-2">Don't have an account? </p>
+        <p className="ml-2">Don&rsquo;t have an account? </p>
         <Button variant="link">
           <Link href="/signup">Register now</Link>
         </Button>
