@@ -77,7 +77,7 @@ export function LoginForm() {
     return (
         <Form {...form}>
           {error && (
-            <p style={{ 
+            <p style={{
               backgroundColor: '#ffcccc',
               fontWeight: '500',
               color: 'red',
@@ -121,9 +121,11 @@ export function LoginForm() {
                 />
 
                 <div style={{ textAlign: 'center', paddingBottom: 15, paddingTop: 10 }}>
-                    <Button type="submit" style={{ width: 200, borderRadius: 10 }} disabled={submitting}>
-                      {submitting ? 'Logging in...' : 'Login'}
-                    </Button>
+                    <a href='/forgot-password' style={{ fontSize: 9}} >Forgot Password?</a>
+                </div>
+
+                <div style={{ textAlign: 'center', paddingBottom: 15, paddingTop: 5 }}>
+                    <Button type="submit" style={{ width: 200, borderRadius: 10 }} disabled={submitting}>Login</Button>
                 </div>
             </form>
 

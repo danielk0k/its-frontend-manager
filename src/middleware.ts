@@ -47,6 +47,6 @@ export default auth(async function middleware(request) {
 export const config = {
   matcher: [
     // Match all routes except the ones that start with /signin and api and the static folder
-    "/((?!api|_next/static|_next/image|favicon.ico|signin|signup).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|signin|signup|forgot-password|new-password).*)",
   ],
 };
