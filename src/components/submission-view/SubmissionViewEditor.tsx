@@ -1,11 +1,12 @@
 import React, { useRef } from "react";
 import Editor from "@monaco-editor/react";
 
-export default function QuestionViewEditor({
-  handleEditorChange,
+
+export default function SubmissionViewEditor({
+  code,
   language,
 }: {
-  handleEditorChange: (value: string | undefined) => void;
+  code: string;
   language: string;
 }) {
   const editorRef = useRef(null);
@@ -13,12 +14,12 @@ export default function QuestionViewEditor({
   function handleEditorDidMount(editor, monaco) {
     editorRef.current = editor;
   }
-
+  
   return (
     <div className="flex h-full items-center justify-center p-6">
       <Editor
-        language="python"
-        onChange={handleEditorChange}
+        value={code}
+        //onChange={handleEditorChange}
         height="100%"
         width="100%"
         onMount={handleEditorDidMount}
@@ -26,6 +27,7 @@ export default function QuestionViewEditor({
           minimap: { enabled: false },
           scrollBeyondLastLine: false,
           automaticLayout: true,
+          readOnly: true,
         }}
       />
     </div>

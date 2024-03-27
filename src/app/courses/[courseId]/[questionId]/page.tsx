@@ -23,6 +23,6 @@ export default async function QuestionView({
   if (!question) {
     redirect(`/courses/${params.courseId}`);
   }
-
-  return <QuestionViewContainer question={question} user={user}></QuestionViewContainer>;
+  
+  return <QuestionViewContainer question={question} user={user}></QuestionViewContainer>;  
 }
